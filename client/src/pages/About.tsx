@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { Shield, Users, Trophy } from "lucide-react";
+import { Shield, Users, Trophy, UserCircle2, Code, Crown } from "lucide-react";
 
 export default function About() {
   return (
@@ -31,9 +31,45 @@ export default function About() {
                 <Users className="h-8 w-8 text-primary flex-shrink-0" />
                 <div>
                   <h2 className="text-xl font-semibold mb-2">Who We Are</h2>
-                  <p className="text-gray-600">
+                  <p className="text-gray-600 mb-6">
                     We're a team of digital safety experts, educators, and parents committed to making the internet a safer place for children. Our diverse backgrounds allow us to approach digital wellness from multiple perspectives.
                   </p>
+
+                  {/* Leadership Team */}
+                  <div className="grid md:grid-cols-3 gap-6 mt-8">
+                    <div className="text-center">
+                      <div className="flex justify-center mb-4">
+                        <UserCircle2 className="h-16 w-16 text-primary" />
+                      </div>
+                      <h3 className="font-semibold mb-1">Wilma Mwangi</h3>
+                      <p className="text-sm text-primary mb-2">CEO/Co-founder</p>
+                      <p className="text-sm text-gray-600">
+                        Leading our mission to create safer digital spaces for families.
+                      </p>
+                    </div>
+
+                    <div className="text-center">
+                      <div className="flex justify-center mb-4">
+                        <Code className="h-16 w-16 text-primary" />
+                      </div>
+                      <h3 className="font-semibold mb-1">Max Mwangi</h3>
+                      <p className="text-sm text-primary mb-2">CTO/Co-founder</p>
+                      <p className="text-sm text-gray-600">
+                        Driving innovation in digital safety technology.
+                      </p>
+                    </div>
+
+                    <div className="text-center">
+                      <div className="flex justify-center mb-4">
+                        <Crown className="h-16 w-16 text-primary" />
+                      </div>
+                      <h3 className="font-semibold mb-1">Elise Mwangi</h3>
+                      <p className="text-sm text-primary mb-2">Chief Children Officer</p>
+                      <p className="text-sm text-gray-600">
+                        Ensuring our solutions work for young minds.
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </CardContent>
