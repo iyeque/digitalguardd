@@ -5,28 +5,28 @@ import { Clock, User } from "lucide-react";
 const blogPosts = [
   {
     id: 1,
-    title: "Setting Healthy Digital Boundaries for Your Family",
-    excerpt: "Learn effective strategies for establishing and maintaining digital boundaries that work for your family.",
-    author: "Dr. Sarah Chen",
-    date: "March 15, 2024",
-    readTime: "8 min read",
+    title: "Balancing Digital Life: Screen Time Management for Kids",
+    excerpt: "Discover practical strategies for managing your child's screen time effectively. Learn how to set healthy boundaries while ensuring your child benefits from digital learning opportunities.",
+    author: "Wilma Mwangi",
+    date: "February 23, 2024",
+    readTime: "7 min read",
     category: "Digital Wellness"
   },
   {
     id: 2,
     title: "Understanding Social Media's Impact on Teen Mental Health",
-    excerpt: "Research-backed insights into how social media affects teenage mental well-being and what parents can do.",
-    author: "Michael Thompson",
-    date: "March 12, 2024",
-    readTime: "10 min read",
+    excerpt: "Explore the complex relationship between social media usage and teenage mental well-being. Find out how to help your teens navigate social platforms safely.",
+    author: "Dr. Sarah Chen",
+    date: "February 22, 2024",
+    readTime: "8 min read",
     category: "Mental Health"
   },
   {
     id: 3,
-    title: "A Parent's Guide to Online Gaming Safety",
-    excerpt: "Essential tips and guidelines for keeping children safe while enjoying online gaming.",
-    author: "Emma Rodriguez",
-    date: "March 10, 2024",
+    title: "Digital Safety Tips Every Parent Should Know",
+    excerpt: "Essential safety measures to protect your children online. From privacy settings to monitoring tools, learn how to create a secure digital environment for your family.",
+    author: "Max Mwangi",
+    date: "February 21, 2024",
     readTime: "6 min read",
     category: "Online Safety"
   }
