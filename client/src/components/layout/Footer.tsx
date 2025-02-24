@@ -17,17 +17,17 @@ export default function Footer() {
             <ul className="space-y-2">
               <li>
                 <Link href="/about">
-                  <a className="text-sm text-gray-600 hover:text-primary">About Us</a>
+                  <span className="text-sm text-gray-600 hover:text-primary cursor-pointer">About Us</span>
                 </Link>
               </li>
               <li>
                 <Link href="/support">
-                  <a className="text-sm text-gray-600 hover:text-primary">Support</a>
+                  <span className="text-sm text-gray-600 hover:text-primary cursor-pointer">Support</span>
                 </Link>
               </li>
               <li>
                 <Link href="/contact">
-                  <a className="text-sm text-gray-600 hover:text-primary">Contact</a>
+                  <span className="text-sm text-gray-600 hover:text-primary cursor-pointer">Contact</span>
                 </Link>
               </li>
             </ul>
@@ -38,17 +38,17 @@ export default function Footer() {
             <ul className="space-y-2">
               <li>
                 <Link href="/resources/blog">
-                  <a className="text-sm text-gray-600 hover:text-primary">Blog</a>
+                  <span className="text-sm text-gray-600 hover:text-primary cursor-pointer">Blog</span>
                 </Link>
               </li>
               <li>
                 <Link href="/resources/videos">
-                  <a className="text-sm text-gray-600 hover:text-primary">Videos</a>
+                  <span className="text-sm text-gray-600 hover:text-primary cursor-pointer">Videos</span>
                 </Link>
               </li>
               <li>
                 <Link href="/resources/games">
-                  <a className="text-sm text-gray-600 hover:text-primary">Games</a>
+                  <span className="text-sm text-gray-600 hover:text-primary cursor-pointer">Games</span>
                 </Link>
               </li>
             </ul>

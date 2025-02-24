@@ -17,7 +17,9 @@ export default function Navbar() {
     <nav className="w-full border-b bg-background">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <Link href="/">
-          <a className="text-2xl font-bold text-foreground hover:text-primary transition-colors">Digital Guardian</a>
+          <span className="text-2xl font-bold text-foreground hover:text-primary transition-colors cursor-pointer">
+            Digital Guardian
+          </span>
         </Link>
 
         {/* Desktop Navigation */}
