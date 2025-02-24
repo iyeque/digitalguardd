@@ -8,7 +8,7 @@ const videos = [
     id: 1,
     title: "Digital Wellness: 7 Tips For Better Sleep",
     description: "Learn how your digital habits affect your sleep and discover practical tips for better rest in our connected world.",
-    duration: "12:45",
+    duration: "7:35",
     thumbnail: "https://img.youtube.com/vi/5Z9MPik_SMU/maxresdefault.jpg",
     videoId: "5Z9MPik_SMU",
     category: "Digital Wellness",
@@ -18,7 +18,7 @@ const videos = [
     id: 2,
     title: "Understanding Digital Footprint",
     description: "Explore what a digital footprint is and how it impacts your online presence and future opportunities.",
-    duration: "15:20",
+    duration: "6:42",
     thumbnail: "https://img.youtube.com/vi/5BwVJvw0X98/maxresdefault.jpg",
     videoId: "5BwVJvw0X98",
     category: "Online Safety",
@@ -28,7 +28,7 @@ const videos = [
     id: 3,
     title: "Screen Time Management for Kids",
     description: "Essential strategies for parents to manage their children's screen time effectively while promoting healthy digital habits.",
-    duration: "18:30",
+    duration: "8:15",
     thumbnail: "https://img.youtube.com/vi/-6h1Fx-llYw/maxresdefault.jpg",
     videoId: "-6h1Fx-llYw",
     category: "Parenting Tips",
@@ -38,7 +38,7 @@ const videos = [
     id: 4,
     title: "Social Media Safety Guide",
     description: "Learn how to protect your privacy and stay safe while using social media platforms.",
-    duration: "20:15",
+    duration: "9:20",
     thumbnail: "https://img.youtube.com/vi/vcA0ngHicNk/maxresdefault.jpg",
     videoId: "vcA0ngHicNk",
     category: "Online Safety",
@@ -48,7 +48,7 @@ const videos = [
     id: 5,
     title: "Digital Wellness Basics",
     description: "An introduction to digital wellness and its importance in maintaining a healthy relationship with technology.",
-    duration: "16:45",
+    duration: "10:15",
     thumbnail: "https://img.youtube.com/vi/xxT3IYiIJsI/maxresdefault.jpg",
     videoId: "xxT3IYiIJsI",
     category: "Digital Wellness",
@@ -114,7 +114,7 @@ export default function Videos() {
           {videos.slice(1).map((video) => (
             <Card key={video.id}>
               <CardContent className="pt-6">
-                <div 
+                <div
                   className="cursor-pointer"
                   onClick={() => setSelectedVideo(video.videoId)}
                 >
@@ -122,8 +122,8 @@ export default function Videos() {
                     <VideoPlayer videoId={video.videoId} title={video.title} />
                   ) : (
                     <div className="aspect-video bg-gray-100 relative group rounded-lg mb-4">
-                      <img 
-                        src={video.thumbnail} 
+                      <img
+                        src={video.thumbnail}
                         alt={video.title}
                         className="w-full h-full object-cover rounded-lg"
                       />

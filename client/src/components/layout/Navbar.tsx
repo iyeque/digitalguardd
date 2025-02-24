@@ -8,6 +8,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
+import { ModeToggle } from "@/components/ui/mode-toggle";
 
 export default function Navbar() {
   const [location] = useLocation();
@@ -62,6 +63,10 @@ export default function Navbar() {
               </NavigationMenuItem>
 
               <NavigationMenuItem>
+                <ModeToggle />
+              </NavigationMenuItem>
+
+              <NavigationMenuItem>
                 <Link href="/contact">
                   <Button variant="default" className="text-primary-foreground">Contact Us</Button>
                 </Link>
@@ -71,7 +76,8 @@ export default function Navbar() {
         </div>
 
         {/* Mobile Navigation Button */}
-        <div className="md:hidden">
+        <div className="md:hidden flex items-center gap-2">
+          <ModeToggle />
           <Button 
             variant="ghost" 
             className="text-foreground hover:text-primary"
