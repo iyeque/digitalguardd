@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Clock, User } from "lucide-react";
+import { Clock, User, MessageSquare } from "lucide-react";
+import { CommentForm } from "@/components/blog/CommentForm";
+import { NewsletterSignup } from "@/components/ui/newsletter-signup";
 import {
   Accordion,
   AccordionContent,
@@ -365,11 +367,39 @@ Got thoughts? Drop a comment below—unless you’re an AI. Then, please admire 
 
 export default function Blog() {
   const [selectedCategory, setSelectedCategory] = useState("All Topics");
+  const [posts, setPosts] = useState<BlogPost[]>(blogPosts);
+  const [expandedPost, setExpandedPost] = useState<number | null>(null);
 
   const filteredPosts =
     selectedCategory === "All Topics"
-      ? blogPosts
-      : blogPosts.filter((post) => post.category === selectedCategory);
+      ? posts
+      : posts.filter((post) => post.category === selectedCategory);
+      
+  // Function to handle adding a new comment to a post
+  const handleAddComment = (postId: number, comment: { content: string; author: string }) => {
+    const newComment = {
+      id: Date.now(),
+      content: comment.content,
+      author: comment.author,
+      date: new Date().toLocaleDateString()
+    };
+    
+    setPosts(currentPosts => 
+      currentPosts.map(post => 
+        post.id === postId
+          ? {
+              ...post,
+              comments: [...(post.comments || []), newComment]
+            }
+          : post
+      )
+    );
+  };
+  
+  // Function to handle accordion toggle
+  const handleAccordionChange = (postId: number) => {
+    setExpandedPost(expandedPost === postId ? null : postId);
+  };
 
   return (
     <div className="container mx-auto px-4 py-12">
@@ -404,52 +434,71 @@ export default function Blog() {
           {filteredPosts.map((post) => (
             <Card key={post.id}>
               {post.coverImage && (
-                <div className="relative w-full h-48 overflow-hidden">
+                <div className="relative w-full h-48 overflow-hidden rounded-t-lg">
                   <img
                     src={post.coverImage}
-                    alt={post.title}
-                    className="w-full h-full object-cover"
+                    alt={`Cover image for article: ${post.title}`}
+                    className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
+                    loading="lazy"
                   />
+                  <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/60 to-transparent h-16" aria-hidden="true" />
                 </div>
               )}
               <CardHeader>
                 <div className="text-sm text-primary font-medium mb-2">
                   {post.category}
                 </div>
-                <Accordion type="single" collapsible>
-                  <AccordionItem value="item-1" className="border-none">
-                    <AccordionTrigger className="hover:no-underline">
+                <Accordion 
+                  type="single" 
+                  collapsible 
+                  value={expandedPost === post.id ? `post-${post.id}` : ""}
+                  onValueChange={() => handleAccordionChange(post.id)}
+                >
+                  <AccordionItem value={`post-${post.id}`} className="border-none">
+                    <AccordionTrigger className="hover:no-underline" aria-label={`Expand article: ${post.title}`}>
                       <h2 className="text-2xl font-bold text-left">
                         {post.title}
                       </h2>
                     </AccordionTrigger>
                     <AccordionContent>
-                      <div className="prose max-w-none mt-4">
-                        <p className="whitespace-pre-line">{post.content}</p>
+                      <div id={`post-content-${post.id}`} className="prose max-w-none mt-4">
+                        {post.content.split('\n\n').map((paragraph, index) => (
+                          <p key={index} className="mb-4">{paragraph}</p>
+                        ))}
                       </div>
                       {/* Comments Section */}
                       <div className="mt-8 border-t pt-6">
-                        <h3 className="text-lg font-semibold mb-4">Comments</h3>
-                        {post.comments?.map((comment) => (
-                          <div
-                            key={comment.id}
-                            className="bg-muted/50 rounded-lg p-4 mb-4"
-                          >
-                            <p className="text-sm mb-2">{comment.content}</p>
-                            <div className="flex items-center gap-2 text-sm text-gray-500">
-                              <User className="h-4 w-4" />
-                              <span>{comment.author}</span>
-                              <span>•</span>
-                              <span>{comment.date}</span>
-                            </div>
+                        <h3 className="text-lg font-semibold mb-4" id={`comments-section-${post.id}`}>Comments</h3>
+                        {post.comments && post.comments.length > 0 ? (
+                          <div className="space-y-4" aria-labelledby={`comments-section-${post.id}`}>
+                            {post.comments.map((comment) => (
+                              <div
+                                key={comment.id}
+                                className="bg-muted/50 rounded-lg p-4"
+                                aria-label={`Comment by ${comment.author}`}
+                              >
+                                <p className="text-sm mb-2">{comment.content}</p>
+                                <div className="flex items-center gap-2 text-sm text-gray-500">
+                                  <User className="h-4 w-4" aria-hidden="true" />
+                                  <span>{comment.author}</span>
+                                  <span aria-hidden="true">•</span>
+                                  <span><time dateTime={comment.date}>{comment.date}</time></span>
+                                </div>
+                              </div>
+                            ))}
                           </div>
-                        ))}
+                        ) : (
+                          <p className="text-gray-500 italic mb-4">No comments yet. Be the first to share your thoughts!</p>
+                        )}
                         <div className="mt-4">
-                          <textarea
-                            className="w-full min-h-[100px] rounded-md border bg-background px-3 py-2 text-sm"
-                            placeholder="Write a comment..."
+                          <h4 className="text-md font-medium mb-2">Add Your Comment</h4>
+                          <CommentForm 
+                            onSubmit={(comment) => {
+                              // Add the comment to the post
+                              handleAddComment(post.id, comment);
+                            }}
+                            className="w-full"
                           />
-                          <Button className="mt-2">Post Comment</Button>
                         </div>
                       </div>
                     </AccordionContent>
@@ -457,40 +506,43 @@ export default function Blog() {
                 </Accordion>
                 <div className="flex items-center gap-4 text-sm text-gray-500 mt-2">
                   <div className="flex items-center gap-1">
-                    <User className="h-4 w-4" />
-                    {post.author}
+                    <User className="h-4 w-4" aria-hidden="true" />
+                    <span>{post.author}</span>
                   </div>
                   <div className="flex items-center gap-1">
-                    <Clock className="h-4 w-4" />
-                    {post.readTime}
+                    <Clock className="h-4 w-4" aria-hidden="true" />
+                    <span>{post.readTime}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <MessageSquare className="h-4 w-4" aria-hidden="true" />
+                    <span>{post.comments?.length || 0} comments</span>
                   </div>
                 </div>
               </CardHeader>
               <CardContent>
                 <p className="text-gray-600 mb-4">{post.excerpt}</p>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => handleAccordionChange(post.id)}
+                  aria-expanded={expandedPost === post.id}
+                  aria-controls={`post-content-${post.id}`}
+                >
+                  {expandedPost === post.id ? "Hide Article" : "Read Article"}
+                </Button>
               </CardContent>
             </Card>
           ))}
         </div>
 
         {/* Newsletter Signup */}
-        <Card className="mt-12">
-          <CardContent className="pt-6">
-            <h2 className="text-2xl font-bold mb-4">Stay Updated</h2>
-            <p className="text-gray-600 mb-4">
-              Subscribe to our newsletter for the latest articles and updates on
-              digital wellness.
-            </p>
-            <div className="flex gap-2">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-              />
-              <Button>Subscribe</Button>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="mt-12 bg-muted/30 rounded-lg p-6 border">
+          <NewsletterSignup 
+            className="shadow-none border-none" 
+            title="Stay Updated on Digital Wellness" 
+            description="Subscribe to our newsletter for the latest articles, tips, and updates on digital wellness and online safety for you and your family."
+          />
+        </div>
       </div>
     </div>
   );

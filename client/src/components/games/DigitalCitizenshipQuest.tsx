@@ -1,5 +1,4 @@
-
-import { useState } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Trophy, Star } from "lucide-react";
@@ -56,36 +55,49 @@ export default function DigitalCitizenshipQuest({ onBack }: DigitalCitizenshipQu
   const [score, setScore] = useState<number>(0);
   const [gameOver, setGameOver] = useState<boolean>(false);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const handleAnswer = (answerIndex: number) => {
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, []);
+
+  const handleAnswer = useCallback((answerIndex: number) => {
+    if (selectedAnswer !== null) return; // Prevent extra clicks
+
     setSelectedAnswer(answerIndex);
     if (answerIndex === questions[currentQuestion].correctAnswer) {
-      setScore(score + 1);
+      setScore(prevScore => prevScore + 1);
     }
     
-    setTimeout(() => {
+    timerRef.current = setTimeout(() => {
       if (currentQuestion < questions.length - 1) {
-        setCurrentQuestion(currentQuestion + 1);
+        setCurrentQuestion(prev => prev + 1);
         setSelectedAnswer(null);
       } else {
         setGameOver(true);
       }
     }, 1000);
-  };
+  }, [currentQuestion, selectedAnswer]);
 
-  const resetGame = () => {
+  const resetGame = useCallback(() => {
+    if (timerRef.current) clearTimeout(timerRef.current);
     setCurrentQuestion(0);
     setScore(0);
     setGameOver(false);
     setSelectedAnswer(null);
-  };
+  }, []);
 
   return (
     <Card className="p-6 max-w-2xl mx-auto">
       {!gameOver ? (
         <div>
           <div className="mb-6">
-            <h2 className="text-xl font-bold mb-2">Question {currentQuestion + 1}/{questions.length}</h2>
+            <h2 className="text-xl font-bold mb-2">
+              Question {currentQuestion + 1}/{questions.length}
+            </h2>
             <p className="text-lg">{questions[currentQuestion].text}</p>
           </div>
           <div className="space-y-3">
@@ -99,7 +111,8 @@ export default function DigitalCitizenshipQuest({ onBack }: DigitalCitizenshipQu
                       : 'bg-red-500 hover:bg-red-600'
                     : ''
                 }`}
-                onClick={() => selectedAnswer === null && handleAnswer(index)}
+                onClick={() => handleAnswer(index)}
+                disabled={selectedAnswer !== null}
               >
                 {option}
               </Button>

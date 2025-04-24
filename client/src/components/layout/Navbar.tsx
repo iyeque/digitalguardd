@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useLocation } from "wouter";
+import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import {
   NavigationMenu,
@@ -9,6 +9,7 @@ import {
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 import { ModeToggle } from "@/components/ui/mode-toggle";
+import { NavLink } from "./NavLink";
 
 export default function Navbar() {
   const [location] = useLocation();
@@ -28,15 +29,15 @@ export default function Navbar() {
           <NavigationMenu>
             <NavigationMenuList>
               <NavigationMenuItem>
-                <Link href="/">
-                  <Button variant="ghost" className="text-foreground hover:text-primary">Home</Button>
-                </Link>
+                <NavLink href="/" exact>
+                  Home
+                </NavLink>
               </NavigationMenuItem>
 
               <NavigationMenuItem>
-                <Link href="/about">
-                  <Button variant="ghost" className="text-foreground hover:text-primary">About</Button>
-                </Link>
+                <NavLink href="/about">
+                  About
+                </NavLink>
               </NavigationMenuItem>
 
               <NavigationMenuItem>
@@ -57,9 +58,9 @@ export default function Navbar() {
               </NavigationMenuItem>
 
               <NavigationMenuItem>
-                <Link href="/support">
-                  <Button variant="ghost" className="text-foreground hover:text-primary">Support</Button>
-                </Link>
+                <NavLink href="/support">
+                  Support
+                </NavLink>
               </NavigationMenuItem>
 
               <NavigationMenuItem>
@@ -67,9 +68,9 @@ export default function Navbar() {
               </NavigationMenuItem>
 
               <NavigationMenuItem>
-                <Link href="/contact">
-                  <Button variant="default" className="text-primary-foreground">Contact Us</Button>
-                </Link>
+                <NavLink href="/contact" variant="default" className="text-primary-foreground">
+                  Contact Us
+                </NavLink>
               </NavigationMenuItem>
             </NavigationMenuList>
           </NavigationMenu>
@@ -98,27 +99,27 @@ export default function Navbar() {
       {isOpen && (
         <div className="md:hidden bg-background border-t">
           <div className="px-2 pt-2 pb-3 space-y-1">
-            <Link href="/">
-              <Button variant="ghost" className="w-full text-left text-foreground hover:text-primary">Home</Button>
-            </Link>
-            <Link href="/about">
-              <Button variant="ghost" className="w-full text-left text-foreground hover:text-primary">About</Button>
-            </Link>
-            <Link href="/resources/blog">
-              <Button variant="ghost" className="w-full text-left text-foreground hover:text-primary">Blog</Button>
-            </Link>
-            <Link href="/resources/videos">
-              <Button variant="ghost" className="w-full text-left text-foreground hover:text-primary">Videos</Button>
-            </Link>
-            <Link href="/resources/games">
-              <Button variant="ghost" className="w-full text-left text-foreground hover:text-primary">Games</Button>
-            </Link>
-            <Link href="/support">
-              <Button variant="ghost" className="w-full text-left text-foreground hover:text-primary">Support</Button>
-            </Link>
-            <Link href="/contact">
-              <Button variant="default" className="w-full text-primary-foreground">Contact Us</Button>
-            </Link>
+            <NavLink href="/" variant="ghost" className="w-full justify-start" exact onClick={() => setIsOpen(false)}>
+              Home
+            </NavLink>
+            <NavLink href="/about" variant="ghost" className="w-full justify-start" onClick={() => setIsOpen(false)}>
+              About
+            </NavLink>
+            <NavLink href="/resources/blog" variant="ghost" className="w-full justify-start" onClick={() => setIsOpen(false)}>
+              Blog
+            </NavLink>
+            <NavLink href="/resources/videos" variant="ghost" className="w-full justify-start" onClick={() => setIsOpen(false)}>
+              Videos
+            </NavLink>
+            <NavLink href="/resources/games" variant="ghost" className="w-full justify-start" onClick={() => setIsOpen(false)}>
+              Games
+            </NavLink>
+            <NavLink href="/support" variant="ghost" className="w-full justify-start" onClick={() => setIsOpen(false)}>
+              Support
+            </NavLink>
+            <NavLink href="/contact" variant="default" className="w-full justify-start mt-4" onClick={() => setIsOpen(false)}>
+              Contact Us
+            </NavLink>
           </div>
         </div>
       )}
