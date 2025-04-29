@@ -77,9 +77,9 @@ export default function Home() {
             <ResourceCard
               href="/resources/blog"
               badge="Blog of the Week"
-              title="Setting Healthy Digital Boundaries"
-              description="Learn effective strategies for establishing and maintaining digital boundaries that work for your family."
-              footer="By Dr. Sarah Chen • 8 min read"
+              title="Recognizing Harmful Content: Protecting Yourself and Others Online"
+              description="The spread of harmful content online is a growing threat to individuals and society."
+              footer="By Wilma Mwangi • 4 min read"
               featured
             />
 
@@ -87,9 +87,9 @@ export default function Home() {
             <ResourceCard
               href="/resources/videos"
               badge="Video of the Week"
-              title="Understanding Screen Time Impact"
-              description="Expert insights on managing screen time and its effects on child development."
-              footer="15 minutes • With Dr. Michael Thompson"
+              title="Digital Wellness: 7 Tips For Better Sleep"
+              description="Learn how your digital habits affect your sleep and discover practical tips for better rest in our connected world."
+              footer="1 minute • By Wilma Mwangi"
               featured
             />
 
