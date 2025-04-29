@@ -6,9 +6,9 @@ import { Clock } from "lucide-react";
 const videos = [
   {
     id: 1,
-    title: "Digital Wellness: 7 Tips For Better Sleep",
+    title: "How Kids Can Stay Safe on Social Media.",
     description:
-      "Learn how your digital habits affect your sleep and discover practical tips for better rest in our connected world.",
+      "Learn how social media is a fun place to share, chat, and connect with friends! 🎉 But do you know how to stay safe while using it? ",
     duration: "1:01",
     thumbnail: "https://img.youtube.com/vi/5Z9MPik_SMU/maxresdefault.jpg",
     videoId: "5Z9MPik_SMU",

@@ -87,8 +87,8 @@ export default function Home() {
             <ResourceCard
               href="/resources/videos"
               badge="Video of the Week"
-              title="Digital Wellness: 7 Tips For Better Sleep"
-              description="Learn how your digital habits affect your sleep and discover practical tips for better rest in our connected world."
+              title="How Kids Can Stay Safe on Social Media."
+              description="Learn how social media is a fun place to share, chat, and connect with friends! 🎉 But do you know how to stay safe while using it? "
               footer="1 minute • By Wilma Mwangi"
               featured
             />
