@@ -32,6 +32,94 @@ const questions: Question[] = [
       "Ban all devices at home"
     ],
     correctAnswer: 0
+  },
+  {
+    id: 3,
+    text: "What's a good rule for device use during meals?",
+    options: [
+      "No devices at the table",
+      "Only for quick checks",
+      "Only for educational content",
+      "Allowed if eating alone"
+    ],
+    correctAnswer: 0
+  },
+  {
+    id: 4,
+    text: "How can parents model good tech habits?",
+    options: [
+      "By using devices constantly",
+      "Setting designated tech-free times",
+      "Only using devices at work",
+      "Never discussing tech use"
+    ],
+    correctAnswer: 1
+  },
+  {
+    id: 5,
+    text: "What's a good bedtime tech rule?",
+    options: [
+      "Devices allowed until sleepy",
+      "No screens 1 hour before bed",
+      "Only for relaxing content",
+      "Allowed with night mode on"
+    ],
+    correctAnswer: 1
+  },
+  {
+    id: 6,
+    text: "How should families handle social media use?",
+    options: [
+      "No rules needed",
+      "Age-appropriate limits and monitoring",
+      "Complete ban until 18",
+      "Only allow anonymous accounts"
+    ],
+    correctAnswer: 1
+  },
+  {
+    id: 7,
+    text: "What's a healthy way to balance online/offline activities?",
+    options: [
+      "Spend all free time online",
+      "Schedule regular device-free family time",
+      "Only go offline when forced",
+      "Alternate days online/offline"
+    ],
+    correctAnswer: 1
+  },
+  {
+    id: 8,
+    text: "How can tech support family bonding?",
+    options: [
+      "By watching videos separately",
+      "Playing educational games together",
+      "Texting from different rooms",
+      "Sharing social media posts"
+    ],
+    correctAnswer: 1
+  },
+  {
+    id: 9,
+    text: "What's important about device charging locations?",
+    options: [
+      "Charge anywhere convenient",
+      "Use a central family charging station",
+      "Only charge in bedrooms",
+      "Never charge overnight"
+    ],
+    correctAnswer: 1
+  },
+  {
+    id: 10,
+    text: "How should families handle tech disagreements?",
+    options: [
+      "Argue constantly",
+      "Create clear family tech agreements",
+      "Let kids decide everything",
+      "Take away all devices as punishment"
+    ],
+    correctAnswer: 1
   }
 ];
 

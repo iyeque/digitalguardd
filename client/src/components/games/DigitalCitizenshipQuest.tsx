@@ -43,6 +43,83 @@ const questions: Question[] = [
       "Share it only at night"
     ],
     correctAnswer: 1
+  },
+  {
+    id: 4,
+    text: "What's the best way to respond to cyberbullying?",
+    options: [
+      "Respond with insults",
+      "Ignore and report it",
+      "Delete your account",
+      "Share it publicly"
+    ],
+    correctAnswer: 1
+  },
+  {
+    id: 5,
+    text: "How often should you update your passwords?",
+    options: [
+      "Never",
+      "Every 3-6 months",
+      "Only when you forget them",
+      "Every week"
+    ],
+    correctAnswer: 1
+  },
+  {
+    id: 6,
+    text: "What should you do if you see inappropriate content online?",
+    options: [
+      "Share it with friends",
+      "Report it and leave the page",
+      "Comment on it",
+      "Save it for later"
+    ],
+    correctAnswer: 1
+  },
+  {
+    id: 7,
+    text: "What information is safe to share in online profiles?",
+    options: [
+      "Your full name and address",
+      "Only general interests and hobbies",
+      "Your daily schedule",
+      "Your pet's name"
+    ],
+    correctAnswer: 1
+  },
+  {
+    id: 8,
+    text: "What's the safest way to use public WiFi?",
+    options: [
+      "For all activities",
+      "Only for browsing, not logging in",
+      "For online banking",
+      "For shopping with credit cards"
+    ],
+    correctAnswer: 1
+  },
+  {
+    id: 9,
+    text: "How can you verify if a website is secure?",
+    options: [
+      "By its design",
+      "Check for HTTPS and a padlock icon",
+      "If it has lots of ads",
+      "If it ranks high in search results"
+    ],
+    correctAnswer: 1
+  },
+  {
+    id: 10,
+    text: "What should you do with old devices before disposing of them?",
+    options: [
+      "Throw them away",
+      "Factory reset and wipe all data",
+      "Give them to strangers",
+      "Sell them as-is"
+    ],
+    correctAnswer: 1
   }
 ];
 

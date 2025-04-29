@@ -35,6 +35,102 @@ const puzzles: Puzzle[] = [
       "Never share your phone number online"
     ],
     correctAnswer: 0
+  },
+  {
+    id: 3,
+    scenario: "You receive an email asking you to click a link to verify your account.",
+    question: "What should you do first?",
+    options: [
+      "Click the link immediately",
+      "Hover over the link to see the real URL",
+      "Forward the email to your contacts",
+      "Reply with your password"
+    ],
+    correctAnswer: 1
+  },
+  {
+    id: 4,
+    scenario: "A pop-up says your computer is infected and offers a free scan.",
+    question: "How should you respond?",
+    options: [
+      "Download the scanner immediately",
+      "Close the pop-up without clicking",
+      "Call the number provided for help",
+      "Restart your computer"
+    ],
+    correctAnswer: 1
+  },
+  {
+    id: 5,
+    scenario: "Someone online asks for your home address to send a gift.",
+    question: "What's the best response?",
+    options: [
+      "Give them your address",
+      "Politely decline and stop chatting",
+      "Ask for their address first",
+      "Send a fake address"
+    ],
+    correctAnswer: 1
+  },
+  {
+    id: 6,
+    scenario: "You find a USB drive in the parking lot.",
+    question: "What's the safest thing to do?",
+    options: [
+      "Plug it into your computer to see what's on it",
+      "Give it to lost and found without plugging it in",
+      "Format it and use it yourself",
+      "Throw it away"
+    ],
+    correctAnswer: 1
+  },
+  {
+    id: 7,
+    scenario: "A website offers free movie downloads if you disable your antivirus.",
+    question: "Is this safe?",
+    options: [
+      "Yes, free movies are worth it",
+      "No, this is likely malicious",
+      "Only if you use a VPN",
+      "Only on weekends"
+    ],
+    correctAnswer: 1
+  },
+  {
+    id: 8,
+    scenario: "Your friend's social media account sends you a strange message.",
+    question: "What should you do?",
+    options: [
+      "Reply immediately",
+      "Contact your friend another way to verify",
+      "Click any links they send",
+      "Ignore it"
+    ],
+    correctAnswer: 1
+  },
+  {
+    id: 9,
+    scenario: "An app requests access to your contacts and location.",
+    question: "When should you grant permission?",
+    options: [
+      "Always for convenience",
+      "Only if the app needs it to function",
+      "Never for privacy",
+      "Only for social media apps"
+    ],
+    correctAnswer: 1
+  },
+  {
+    id: 10,
+    scenario: "You're asked to enter credit card details on an unsecured website.",
+    question: "What's the risk?",
+    options: [
+      "No risk if the deal is good",
+      "High risk of financial fraud",
+      "Only risky at night",
+      "Risk depends on your browser"
+    ],
+    correctAnswer: 1
   }
 ];
 

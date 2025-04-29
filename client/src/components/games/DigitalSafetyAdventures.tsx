@@ -40,19 +40,19 @@ const scenarios: Scenario[] = [
     situation: "You see a pop-up saying you won a prize and need to click to claim it.",
     choices: [
       {
-        text: "Click to claim the prize",
+        text: "Click the pop-up to claim your prize",
         isSafe: false,
-        feedback: "This could be a scam! Never click on unexpected prize offers."
+        feedback: "This is likely a scam! Never click on unexpected prize pop-ups."
       },
       {
-        text: "Close the pop-up",
+        text: "Close the pop-up without clicking",
         isSafe: true,
-        feedback: "Smart move! It's best to close unexpected pop-ups."
+        feedback: "Good choice! It's best to ignore suspicious pop-ups."
       },
       {
-        text: "Tell an adult about it",
+        text: "Ask a parent or guardian about it",
         isSafe: true,
-        feedback: "Great decision! Always tell an adult about suspicious online offers."
+        feedback: "Excellent! Always check with a trusted adult about suspicious messages."
       }
     ]
   }
