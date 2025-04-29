@@ -3,6 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { GamepadIcon, Star, Users, Clock } from "lucide-react";
 import DigitalCitizenshipQuest from "@/components/games/DigitalCitizenshipQuest";
+import DigitalSafetyAdventures from "@/components/games/DigitalSafetyAdventures";
+import CyberDetective from "@/components/games/CyberDetective";
+import FamilyTechChallenge from "@/components/games/FamilyTechChallenge";
 import { GameCard } from "@/components/games/GameCard";
 
 const games = [
@@ -44,14 +47,12 @@ const games = [
 ];
 
 export default function Games() {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const gameGridRef = useRef<HTMLDivElement | null>(null); // Step 1: Create a reference for the game grid
+  const [activeGame, setActiveGame] = useState<string | null>(null);
+  const gameGridRef = useRef<HTMLDivElement | null>(null);
 
-  const startGame = (isFeatured: boolean) => {
-    if (isFeatured) {
-      setIsPlaying(true);
-    }
-    gameGridRef.current?.scrollIntoView({ behavior: "smooth" }); // Step 3: Scroll into view when a game starts
+  const startGame = (gameId: number) => {
+    setActiveGame(gameId.toString());
+    gameGridRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
@@ -67,8 +68,16 @@ export default function Games() {
             </p>
           </div>
 
-          {isPlaying ? (
-            <DigitalCitizenshipQuest onBack={() => setIsPlaying(false)} />
+          {activeGame ? (
+            activeGame === "1" ? (
+              <DigitalSafetyAdventures onBack={() => setActiveGame(null)} />
+            ) : activeGame === "2" ? (
+              <CyberDetective onBack={() => setActiveGame(null)} />
+            ) : activeGame === "3" ? (
+              <FamilyTechChallenge onBack={() => setActiveGame(null)} />
+            ) : (
+              <DigitalCitizenshipQuest onBack={() => setActiveGame(null)} />
+            )
           ) : (
             <>
               {/* Featured Game */}
@@ -100,7 +109,7 @@ export default function Games() {
                         </div>
                       </div>
                       <Button
-                        onClick={() => startGame(true)} // Start highlighted game
+                        onClick={() => startGame(4)} // Start highlighted game (Digital Citizenship Quest)
                         className="bg-gradient-to-r from-blue-400 to-purple-500 hover:bg-opacity-90 text-white"
                       >
                         Play Now
@@ -123,7 +132,7 @@ export default function Games() {
                   <GameCard
                     key={game.id}
                     {...game}
-                    onStartGame={() => startGame(false)}
+                    onStartGame={() => startGame(game.id)}
                   />
                 ))}
               </div>
