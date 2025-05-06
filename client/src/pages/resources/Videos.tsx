@@ -153,7 +153,7 @@ export default function Videos() {
         {/* Video Grid - include all videos */}
         <div className="grid md:grid-cols-2 gap-6">
           {videos.map((video) => (
-            <Card key={video.id}>
+            <Card key={video.id} className="overflow-hidden border-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 backdrop-blur-sm">
               <CardContent className="pt-6">
                 <div
                   className="cursor-pointer"

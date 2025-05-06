@@ -9,7 +9,7 @@ export default function Home() {
   return (
     <div>
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-primary/10 to-primary/5 py-20">
+      <section className="bg-gradient-to-r from-blue-500/20 to-purple-500/20 py-20">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl">
             <h1 className="text-4xl md:text-5xl font-bold mb-6">
@@ -31,11 +31,11 @@ export default function Home() {
       </section>
 
       {/* Features Section */}
-      <section className="py-20">
+      <section className="bg-gradient-to-r from-blue-500/20 to-purple-500/20 py-20">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-12">How We Help</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Card>
+            <Card className="bg-gradient-to-r from-green-500/20 to-emerald-500/20">
               <CardContent className="pt-6">
                 <Shield className="h-12 w-12 text-primary mb-4" />
                 <h3 className="text-xl font-semibold mb-2">Safety First</h3>
@@ -45,7 +45,7 @@ export default function Home() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="bg-gradient-to-r from-green-500/20 to-emerald-500/20">
               <CardContent className="pt-6">
                 <Book className="h-12 w-12 text-primary mb-4" />
                 <h3 className="text-xl font-semibold mb-2">Educational Resources</h3>
@@ -55,7 +55,7 @@ export default function Home() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="bg-gradient-to-r from-green-500/20 to-emerald-500/20">
               <CardContent className="pt-6">
                 <GamepadIcon className="h-12 w-12 text-primary mb-4" />
                 <h3 className="text-xl font-semibold mb-2">Interactive Learning</h3>
@@ -69,7 +69,7 @@ export default function Home() {
       </section>
 
       {/* Weekly Featured Resources */}
-      <section className="bg-gray-50 py-20">
+      <section className="bg-gradient-to-r from-blue-500/20 to-purple-500/20 py-20">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-12">Featured This Week</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -81,6 +81,7 @@ export default function Home() {
               description="The spread of harmful content online is a growing threat to individuals and society."
               footer="By Wilma Mwangi • 4 min read"
               featured
+              className="bg-gradient-to-r from-orange-500/20 to-red-500/20"
             />
 
             {/* Video of the Week */}
@@ -91,6 +92,7 @@ export default function Home() {
               description="Learn how social media is a fun place to share, chat, and connect with friends! 🎉 But do you know how to stay safe while using it? "
               footer="1 minute • By Wilma Mwangi"
               featured
+              className="bg-gradient-to-r from-orange-500/20 to-red-500/20"
             />
 
             {/* Game of the Week */}
@@ -101,13 +103,14 @@ export default function Home() {
               description="An interactive game teaching kids about online safety through fun challenges."
               footer="Ages 8-12 • 20-30 minutes"
               featured
+              className="bg-gradient-to-r from-orange-500/20 to-red-500/20"
             />
           </div>
         </div>
       </section>
 
       {/* Testimonials Section */}
-      <section className="py-20">
+      <section className="bg-gradient-to-r from-blue-500/20 to-purple-500/20 py-20">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-12">What Parents Say</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

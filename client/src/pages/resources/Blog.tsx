@@ -27,7 +27,6 @@ interface BlogPost {
   date: string;
   readTime: string;
   category: string;
-  coverImage?: string;
   comments?: Comment[];
 }
 
@@ -122,7 +121,7 @@ const blogPosts: BlogPost[] = [
     date: new Date().toLocaleDateString(),
     readTime: "4 min read",
     category: "Digital Education",
-    coverImage: "https://your-image-url.jpg",
+
   },
   {
     id: 1,
@@ -130,8 +129,7 @@ const blogPosts: BlogPost[] = [
       "Understanding Online Privacy: Protecting Your Personal Information in a Digital World.",
     excerpt:
       "💡 In an age where data is currency, how much is your privacy worth? 💰",
-    coverImage:
-      "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=1200",
+    
     content: `In today's digital world, our personal information is collected, stored, and shared with all the subtlety of a neon billboard. Major corporations would have you believe your data is locked up tighter than Fort Knox but social media platforms know your favorite pizza topping to mobile games that track every time you lose a life. Let's face it, companies are eager to harvest your data for marketing, analytics, and profit. 
 
 Understanding online privacy is crucial—not just for keeping your or your kids info secure, but also to reclaim a bit of mystery in a world that’s all too transparent.
@@ -432,18 +430,8 @@ export default function Blog() {
         {/* Blog Posts */}
         <div className="space-y-8">
           {filteredPosts.map((post) => (
-            <Card key={post.id}>
-              {post.coverImage && (
-                <div className="relative w-full h-48 overflow-hidden rounded-t-lg">
-                  <img
-                    src={post.coverImage}
-                    alt={`Cover image for article: ${post.title}`}
-                    className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
-                    loading="lazy"
-                  />
-                  <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/60 to-transparent h-16" aria-hidden="true" />
-                </div>
-              )}
+            <Card key={post.id} className="overflow-hidden border-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20">
+              
               <CardHeader>
                 <div className="text-sm text-primary font-medium mb-2">
                   {post.category}

@@ -139,7 +139,7 @@ export default function Games() {
 
               {/* Achievements Section */}
               <div className="mt-16 text-center">
-                <h2 className="text-3xl font-bold mb-8 text-gradient bg-gradient-to-r from-blue-500 to-purple-500">
+                <h2 className="text-3xl font-bold mb-8">
                   Game Achievements
                 </h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6">

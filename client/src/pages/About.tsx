@@ -3,7 +3,7 @@ import { Shield, Users, Trophy, UserCircle2, Code, Crown } from "lucide-react";
 
 export default function About() {
   return (
-    <div className="container mx-auto px-4 py-12">
+    <div className="container mx-auto px-4 py-12 bg-gradient-to-r from-blue-500/10 to-purple-500/10">
       <div className="max-w-3xl mx-auto">
         <h1 className="text-4xl font-bold mb-6">About Digital Guardian</h1>
         <p className="text-lg text-gray-600 mb-12">
@@ -32,7 +32,7 @@ export default function About() {
                 <div>
                   <h2 className="text-xl font-semibold mb-2">Who We Are</h2>
                   <p className="text-gray-600 mb-6">
-                    We're a team of digital safety experts, educators, and parents committed to making the internet a safer place for children. Our diverse backgrounds allow us to approach digital wellness from multiple perspectives.
+                    We're a family committed to making the internet a safer place for children. Our diverse backgrounds allow us to approach digital wellness from multiple perspectives.
                   </p>
 
                   {/* Leadership Team */}

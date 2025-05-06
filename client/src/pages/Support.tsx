@@ -8,10 +8,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { HelpCircle, BookOpen, Video, MessageCircle } from "lucide-react";
+import { ChatBot } from "@/components/ChatBot";
 
 export default function Support() {
   return (
-    <div className="container mx-auto px-4 py-12">
+    <div className="container mx-auto px-4 py-12 bg-gradient-to-r from-blue-500/20 to-purple-500/20">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-4xl font-bold mb-6">Support Center</h1>
         <p className="text-lg text-gray-600 mb-12">
@@ -20,7 +21,7 @@ export default function Support() {
 
         {/* Quick Help Section */}
         <div className="grid md:grid-cols-2 gap-6 mb-12">
-          <Card>
+          <Card className="bg-gradient-to-r from-green-500/20 to-emerald-500/20">
             <CardContent className="pt-6">
               <div className="flex items-center gap-4 mb-4">
                 <BookOpen className="h-8 w-8 text-primary" />
@@ -32,10 +33,18 @@ export default function Support() {
               <Link href="/resources/blog">
                 <Button variant="outline" className="w-full">View Articles</Button>
               </Link>
+              <div className="mt-6 pt-6 border-t border-gray-200">
+                <h3 className="text-sm font-medium text-gray-500 mb-3">Additional Resources</h3>
+                <ul className="space-y-2 text-sm">
+                  <li><a href="https://www.commonsensemedia.org" className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">Common Sense Media</a></li>
+                  <li><a href="https://www.connectsafely.org" className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">ConnectSafely</a></li>
+                  <li><a href="https://www.fosi.org" className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">Family Online Safety Institute</a></li>
+                  <li><a href="https://www.netsmartz.org" className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">NetSmartz</a></li>
+                </ul>
+              </div>
             </CardContent>
           </Card>
-
-          <Card>
+          <Card className="bg-gradient-to-r from-green-500/20 to-emerald-500/20">
             <CardContent className="pt-6">
               <div className="flex items-center gap-4 mb-4">
                 <Video className="h-8 w-8 text-primary" />
@@ -47,13 +56,27 @@ export default function Support() {
               <Link href="/resources/videos">
                 <Button variant="outline" className="w-full">Watch Videos</Button>
               </Link>
+              <div className="mt-6 pt-6 border-t border-gray-200">
+                <h3 className="text-sm font-medium text-gray-500 mb-3">Additional Resources</h3>
+                <ul className="space-y-2 text-sm">
+                  <li><a href="https://www.youtube.com/user/CommonSenseMedia" className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">Common Sense Media YouTube</a></li>
+                  <li><a href="https://www.youtube.com/c/ConnectSafely" className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">ConnectSafely YouTube</a></li>
+                  <li><a href="https://www.youtube.com/user/FOSIonline" className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">FOSI YouTube</a></li>
+                  <li><a href="https://www.youtube.com/user/NCMEC" className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">NetSmartz YouTube</a></li>
+                </ul>
+              </div>
             </CardContent>
           </Card>
         </div>
 
         {/* FAQ Section */}
         <div className="mb-12">
-          <h2 className="text-2xl font-bold mb-6">Frequently Asked Questions</h2>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold">Frequently Asked Questions</h2>
+            <Link href="/faq">
+              <Button variant="outline">View Full FAQ Resources</Button>
+            </Link>
+          </div>
           <Accordion type="single" collapsible className="w-full">
             <AccordionItem value="item-1">
               <AccordionTrigger>How can I set up parental controls?</AccordionTrigger>
@@ -94,9 +117,7 @@ export default function Support() {
           <p className="text-gray-600 mb-6">
             Can't find what you're looking for? Our support team is here to help you with any questions or concerns.
           </p>
-          <Link href="/contact">
-            <Button>Contact Support</Button>
-          </Link>
+          <ChatBot />
         </div>
       </div>
     </div>

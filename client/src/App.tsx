@@ -14,6 +14,7 @@ import Support from "@/pages/Support";
 import Blog from "@/pages/resources/Blog";
 import Videos from "@/pages/resources/Videos";
 import Games from "@/pages/resources/Games";
+import FAQ from "@/pages/FAQ";
 
 export default function App() {
   return (
@@ -30,6 +31,7 @@ export default function App() {
               <Route path="/resources/blog" component={Blog} />
               <Route path="/resources/videos" component={Videos} />
               <Route path="/resources/games" component={Games} />
+              <Route path="/faq" component={FAQ} />
               <Route component={NotFound} />
             </Switch>
           </main>
