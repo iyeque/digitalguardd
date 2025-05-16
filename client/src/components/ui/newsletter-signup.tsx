@@ -37,14 +37,14 @@ export function NewsletterSignup({
   return (
     <Card className={className}>
       <CardContent className="pt-6">
-        <h2 className="text-2xl font-bold mb-4">{title}</h2>
+        <h2 className="text-2xl font-bold mb-4 text-white">{title}</h2>
         {isSubmitted ? (
           <div className="text-green-600 mb-4">
             <p>Thank you for subscribing! We've sent a confirmation email.</p>
           </div>
         ) : (
           <>
-            <p className="text-gray-600 mb-4">{description}</p>
+            <p className="text-white mb-4">{description}</p>
             <form onSubmit={handleSubmit} className="space-y-2">
               <div>
                 <input

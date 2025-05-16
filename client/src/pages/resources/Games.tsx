@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { GamepadIcon, Star, Users, Clock } from "lucide-react";
@@ -50,6 +50,29 @@ export default function Games() {
   const [activeGame, setActiveGame] = useState<string | null>(null);
   const gameGridRef = useRef<HTMLDivElement | null>(null);
 
+  const [unlockedAchievements, setUnlockedAchievements] = useState(() => {
+    const saved = localStorage.getItem("unlockedAchievements");
+    return saved ? JSON.parse(saved) : {
+      safetyExpert: false,
+      privacyPro: false,
+      digitalCitizen: false,
+      techMaster: false,
+    };
+  });
+
+  useEffect(() => {
+    localStorage.setItem("unlockedAchievements", JSON.stringify(unlockedAchievements));
+  }, [unlockedAchievements]);
+
+  const unlockAchievement = (id: string) => {
+    setUnlockedAchievements((prev: Record<string, boolean>) => {
+      if (prev[id]) return prev;
+      const updated = { ...prev, [id]: true };
+      localStorage.setItem("unlockedAchievements", JSON.stringify(updated));
+      return updated;
+    });
+  };
+
   const startGame = (gameId: number) => {
     setActiveGame(gameId.toString());
     gameGridRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -72,11 +95,11 @@ export default function Games() {
             activeGame === "1" ? (
               <DigitalSafetyAdventures onBack={() => setActiveGame(null)} />
             ) : activeGame === "2" ? (
-              <CyberDetective onBack={() => setActiveGame(null)} />
+              <CyberDetective onBack={() => setActiveGame(null)} unlockAchievement={unlockAchievement} />
             ) : activeGame === "3" ? (
-              <FamilyTechChallenge onBack={() => setActiveGame(null)} />
+              <FamilyTechChallenge onBack={() => setActiveGame(null)} unlockAchievement={unlockAchievement} />
             ) : (
-              <DigitalCitizenshipQuest onBack={() => setActiveGame(null)} />
+              <DigitalCitizenshipQuest onBack={() => setActiveGame(null)} unlockAchievement={unlockAchievement} />
             )
           ) : (
             <>
@@ -144,19 +167,22 @@ export default function Games() {
                 </h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                   {[
-                    "Safety Expert",
-                    "Privacy Pro",
-                    "Digital Citizen",
-                    "Tech Master",
+                    { key: "Safety Expert", id: "safetyExpert" },
+                    { key: "Privacy Pro", id: "privacyPro" },
+                    { key: "Digital Citizen", id: "digitalCitizen" },
+                    { key: "Tech Master", id: "techMaster" },
                   ].map((achievement) => (
                     <div
-                      key={achievement}
-                      className="bg-background/50 rounded-lg p-4 backdrop-blur-sm"
+                      key={achievement.key}
+                      className={`bg-background/50 rounded-lg p-4 backdrop-blur-sm ${unlockedAchievements[achievement.id] ? "border-2 border-primary" : "opacity-50"}`}
                     >
                       <div className="h-16 w-16 mx-auto mb-3 rounded-full bg-primary/10 flex items-center justify-center">
-                        <Star className="h-8 w-8 text-primary" />
+                        <Star className={`h-8 w-8 ${unlockedAchievements[achievement.id] ? "text-primary" : "text-gray-400"}`} />
                       </div>
-                      <div className="text-sm font-medium">{achievement}</div>
+                      <div className="text-sm font-medium">{achievement.key}</div>
+                      {unlockedAchievements[achievement.id] && (
+                        <div className="text-xs text-green-600 mt-2">Unlocked!</div>
+                      )}
                     </div>
                   ))}
                 </div>

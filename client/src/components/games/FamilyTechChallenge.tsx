@@ -125,9 +125,10 @@ const questions: Question[] = [
 
 interface FamilyTechChallengeProps {
   onBack: () => void;
+  unlockAchievement?: (id: string) => void;
 }
 
-export default function FamilyTechChallenge({ onBack }: FamilyTechChallengeProps) {
+export default function FamilyTechChallenge({ onBack, unlockAchievement }: FamilyTechChallengeProps) {
   const [currentQuestion, setCurrentQuestion] = useState<number>(0);
   const [score, setScore] = useState<number>(0);
   const [gameOver, setGameOver] = useState<boolean>(false);
@@ -165,6 +166,12 @@ export default function FamilyTechChallenge({ onBack }: FamilyTechChallengeProps
     setGameOver(false);
     setSelectedAnswer(null);
   }, []);
+
+  useEffect(() => {
+    if (gameOver && score === questions.length && unlockAchievement) {
+      unlockAchievement("techMaster");
+    }
+  }, [gameOver, score, questions.length, unlockAchievement]);
 
   return (
     <Card className="p-6 max-w-2xl mx-auto">

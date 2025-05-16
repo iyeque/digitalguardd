@@ -16,8 +16,8 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <nav className="w-full border-b bg-background">
-      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+    <nav className="w-full fixed top-0 left-0 z-50 transition-all duration-300">
+      <div className="container mx-auto px-4 h-20 flex items-center justify-between">
         <Link href="/">
           <span className="text-2xl font-bold text-foreground hover:text-primary transition-colors cursor-pointer">
             Digital Guardian
@@ -68,7 +68,7 @@ export default function Navbar() {
               </NavigationMenuItem>
 
               <NavigationMenuItem>
-                <NavLink href="/contact" variant="default" className="text-primary-foreground">
+                <NavLink href="/contact" variant="default" className="bg-blue-500/90 hover:bg-blue-600 text-white shadow-lg">
                   Contact Us
                 </NavLink>
               </NavigationMenuItem>
@@ -117,7 +117,7 @@ export default function Navbar() {
             <NavLink href="/support" variant="ghost" className="w-full justify-start" onClick={() => setIsOpen(false)}>
               Support
             </NavLink>
-            <NavLink href="/contact" variant="default" className="w-full justify-start mt-4" onClick={() => setIsOpen(false)}>
+            <NavLink href="/contact" variant="default" className="w-full justify-start mt-4 bg-blue-500/90 hover:bg-blue-600 text-white shadow-lg" onClick={() => setIsOpen(false)}>
               Contact Us
             </NavLink>
           </div>

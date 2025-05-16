@@ -136,9 +136,10 @@ const puzzles: Puzzle[] = [
 
 interface CyberDetectiveProps {
   onBack: () => void;
+  unlockAchievement?: (id: string) => void;
 }
 
-export default function CyberDetective({ onBack }: CyberDetectiveProps) {
+export default function CyberDetective({ onBack, unlockAchievement }: CyberDetectiveProps) {
   const [currentPuzzle, setCurrentPuzzle] = useState<number>(0);
   const [score, setScore] = useState<number>(0);
   const [gameOver, setGameOver] = useState<boolean>(false);
@@ -150,6 +151,12 @@ export default function CyberDetective({ onBack }: CyberDetectiveProps) {
       if (timerRef.current) clearTimeout(timerRef.current);
     };
   }, []);
+
+  useEffect(() => {
+    if (gameOver && score === puzzles.length && unlockAchievement) {
+      unlockAchievement("safetyExpert");
+    }
+  }, [gameOver, score, unlockAchievement]);
 
   const handleAnswer = useCallback((answerIndex: number) => {
     if (selectedAnswer !== null) return;

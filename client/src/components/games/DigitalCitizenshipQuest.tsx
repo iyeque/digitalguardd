@@ -125,9 +125,10 @@ const questions: Question[] = [
 
 interface DigitalCitizenshipQuestProps {
   onBack: () => void;
+  unlockAchievement?: (id: string) => void;
 }
 
-export default function DigitalCitizenshipQuest({ onBack }: DigitalCitizenshipQuestProps) {
+export default function DigitalCitizenshipQuest({ onBack, unlockAchievement }: DigitalCitizenshipQuestProps) {
   const [currentQuestion, setCurrentQuestion] = useState<number>(0);
   const [score, setScore] = useState<number>(0);
   const [gameOver, setGameOver] = useState<boolean>(false);
@@ -218,4 +219,10 @@ export default function DigitalCitizenshipQuest({ onBack }: DigitalCitizenshipQu
       )}
     </Card>
   );
+
+  useEffect(() => {
+    if (gameOver && score === questions.length && unlockAchievement) {
+      unlockAchievement("digitalCitizen");
+    }
+  }, [gameOver, score, questions.length, unlockAchievement]);
 }

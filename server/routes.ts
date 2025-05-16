@@ -3,6 +3,8 @@ import { createServer } from "http";
 import { storage } from "./storage";
 import { insertMessageSchema } from "@shared/schema";
 
+import { handleLLM } from "./llm";
+
 export async function registerRoutes(app: Express) {
   app.post("/api/contact", async (req, res) => {
     try {
@@ -13,6 +15,8 @@ export async function registerRoutes(app: Express) {
       res.status(400).json({ error: "Invalid message data" });
     }
   });
+
+  app.post("/api/llm", handleLLM);
 
   return createServer(app);
 }

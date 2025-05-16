@@ -59,7 +59,17 @@ const videos = [
     category: "Digital Wellness",
     date: "February 1, 2024",
   },
-];
+  {
+    id: 6,
+    title: "How Kids Can Take Breaks from Screens and Feel Happier",
+    description: "we’re talking about something super cool called a Digital Detox",
+    duration: "1:24",
+    thumbnail: "https://img.youtube.com/vi/OiIX2Jzjhko/maxresdefault.jpg",
+    videoId: "OiIX2Jzjhko",
+    category: "Digital Wellness",
+    date: "April 27, 2024",
+  },
+]
 
 type VideoPlayerProps = {
   videoId: string;
@@ -84,6 +94,15 @@ export default function Videos() {
   );
   const videoPlayerRef = useRef<HTMLDivElement | null>(null);
 
+  const [activeCategory, setActiveCategory] = useState<string>("All Videos");
+  const filteredVideos =
+    activeCategory === "All Videos"
+      ? videos
+      : videos.filter((video) => video.category === activeCategory);
+  const handleCategoryChange = (category: string) => {
+    setActiveCategory(category);
+  };
+
   const playVideo = (videoId: string) => {
     setSelectedVideo(videoId);
     videoPlayerRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -100,16 +119,16 @@ export default function Videos() {
 
         {/* Video Categories */}
         <div className="flex gap-2 mb-8 overflow-x-auto pb-2">
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" className={`bg-gradient-to-r from-blue-500 to-blue-700 text-white ${activeCategory === 'All Videos' ? 'opacity-100' : 'opacity-50'}`} onClick={() => handleCategoryChange('All Videos')}>
             All Videos
           </Button>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" className={`bg-gradient-to-r from-blue-500 to-blue-700 text-white ${activeCategory === 'Digital Wellness' ? 'opacity-100' : 'opacity-50'}`} onClick={() => handleCategoryChange('Digital Wellness')}>
             Digital Wellness
           </Button>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" className={`bg-gradient-to-r from-blue-500 to-blue-700 text-white ${activeCategory === 'Online Safety' ? 'opacity-100' : 'opacity-50'}`} onClick={() => handleCategoryChange('Online Safety')}>
             Online Safety
           </Button>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" className={`bg-gradient-to-r from-blue-500 to-blue-700 text-white ${activeCategory === 'Parenting Tips' ? 'opacity-100' : 'opacity-50'}`} onClick={() => handleCategoryChange('Parenting Tips')}>
             Parenting Tips
           </Button>
         </div>
@@ -152,7 +171,7 @@ export default function Videos() {
 
         {/* Video Grid - include all videos */}
         <div className="grid md:grid-cols-2 gap-6">
-          {videos.map((video) => (
+          {filteredVideos.map((video) => (
             <Card key={video.id} className="overflow-hidden border-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 backdrop-blur-sm">
               <CardContent className="pt-6">
                 <div

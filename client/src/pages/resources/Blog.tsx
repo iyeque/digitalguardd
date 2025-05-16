@@ -421,6 +421,7 @@ export default function Blog() {
               variant={selectedCategory === category ? "default" : "outline"}
               size="sm"
               onClick={() => setSelectedCategory(category)}
+              className={selectedCategory === category ? "bg-gradient-to-r from-blue-500/90 to-blue-600 text-white hover:from-blue-600/90 hover:to-blue-700" : "hover:bg-gradient-to-r hover:from-blue-500/90 hover:to-blue-600 hover:text-white"}
             >
               {category}
             </Button>
@@ -526,7 +527,7 @@ export default function Blog() {
         {/* Newsletter Signup */}
         <div className="mt-12 bg-muted/30 rounded-lg p-6 border">
           <NewsletterSignup 
-            className="shadow-none border-none" 
+            className="shadow-none border-none bg-gradient-to-r from-blue-500/90 to-blue-600 text-white" 
             title="Stay Updated on Digital Wellness" 
             description="Subscribe to our newsletter for the latest articles, tips, and updates on digital wellness and online safety for you and your family."
           />
