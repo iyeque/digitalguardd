@@ -2,7 +2,7 @@ import type { Request, Response } from "express";
 import fetch from "node-fetch";
 
 // Hugging Face API integration
-const HF_API_TOKEN = process.env.HF_API_TOKEN || "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";
+const HF_API_TOKEN = process.env.HF_API_TOKEN;
 const HF_API_URL = "https://api-inference.huggingface.co/models/openchat/openchat-3.5-1210";
 
 export async function handleLLM(req: Request, res: Response) {
