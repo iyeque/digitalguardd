@@ -7,44 +7,57 @@
 Elise Learns
 
 ## User Persona
-- **Primary user**: 2-year-old toddler ("Elise") - taps, watches, listens
-- **Secondary user**: Parent supervising the session, occasionally checking progress
+- **Primary user**: 2-year-old toddler ("Elise") - taps, drags, watches, listens
+- **Secondary user**: Parent supervising and occasionally checking progress / sharing moments
 
-## Design / UX Direction
+## Design Direction
 - Soft pastel, Montessori-inspired "wooden block" aesthetic
 - Fonts: Fredoka (display) + Nunito (body)
 - Big tap targets (≥80px), chunky bottom shadows, rounded corners
 - Calm, non-overstimulating; no jarring gradients/sounds
 - Staggered spring entrance animations, gentle wiggle/pop interactions
 
-## Core Requirements (Static)
-1. Six learning activities accessible from a single home grid
-2. Browser-native text-to-speech (window.speechSynthesis); no external audio APIs
-3. Local-storage progress tracking (no login)
-4. Hidden Parent Dashboard (long-press gear, ~1.5s)
-5. Toddler-safe interactions (no destructive actions, big buttons)
-
-## What's Been Implemented (Feb 2026)
-- **Home** (`/`) – greeting + bento grid of 6 activity cards (sage/mustard/coral/blue/pink wooden blocks)
-- **ABC** (`/abc`) – flashcards A→Z, tap to hear `<letter>. <letter> for <word>`. Prev/Next nav, color-cycling cards
-- **123** (`/123`) – number selector (1–10) + apple-counting taps with verbal feedback
-- **Colors** (`/colors`) – 6 color blocks; tap to hear name with wiggle feedback
-- **Shapes** (`/shapes`) – "Find the X" matching game with 3 random options + audio cue
-- **Animals** (`/animals`) – 8 animals; uses Montessori wooden-toy images for Lion/Elephant/Pig, lucide icons for the rest, speaks name + sound
-- **Rhymes** (`/rhymes`) – 4 nursery rhymes with line-by-line spoken playback and visual highlighting
-- **Parent Dashboard** (`/parent`) – stats (taps, activities visited, est. time), per-activity breakdown, reset button. Hidden behind 1.5s long-press of gear icon.
-- Backend: minimal FastAPI passthrough (default template). No auth required by spec.
-
 ## Architecture
-- **Frontend**: React 19 SPA (CRACO + react-router-dom v7), TailwindCSS, shadcn UI, lucide-react icons
-- **Backend**: FastAPI on `:8001` (`/api` prefix), MongoDB (unused for this app — local storage instead)
-- **Audio**: `window.speechSynthesis` (free, offline-capable on most browsers)
-- **State**: localStorage key `elise_learns_progress_v1`
+- **Frontend**: React 19 SPA (CRACO + react-router-dom v7), TailwindCSS, shadcn UI, lucide-react
+- **Backend**: FastAPI (`/api` prefix on `:8001`) + MongoDB — currently unused; app runs entirely client-side
+- **Audio**: `window.speechSynthesis` for narration; Web Audio API for background lullaby
+- **State**: localStorage — `elise_learns_progress_v1` (progress) + `elise_voice_settings_v1` (voice prefs)
 
-## Prioritized Backlog
-- **P1**: Drag-and-drop puzzle module (currently shapes uses tap-matching as a simple variant)
-- **P1**: Background instrumental music option for rhymes
-- **P2**: Parent settings (toggle TTS voice, lock orientation)
-- **P2**: Multi-language support (Spanish, French toddler vocabulary)
-- **P2**: Achievements / sticker rewards screen
-- **P3**: Optional cloud sync via login (Emergent Auth) for cross-device progress
+## Implemented (Feb 2026)
+
+### Iteration 1 — MVP
+- **Home** (`/`) – greeting + bento grid of activity cards (sage/mustard/coral/blue/pink wooden blocks)
+- **ABC** (`/abc`) – flashcards A→Z with TTS, prev/next nav, color-cycling cards
+- **123** (`/123`) – number selector (1–10) + apple-counting taps with verbal feedback
+- **Colors** (`/colors`) – 6 color blocks; tap to hear name
+- **Shapes** (`/shapes`) – "Find the X" matching mini-game
+- **Animals** (`/animals`) – 8 animals with custom Montessori art for Lion/Elephant/Pig
+- **Rhymes** (`/rhymes`) – 4 nursery rhymes with line-by-line spoken playback
+- **Parent Dashboard** (`/parent`) – stats, per-activity breakdown, hidden via 1.5s long-press of gear
+
+### Iteration 2 — Audio + Engagement features (this release)
+- **Voice settings** (`/parent/settings`):
+  - Female / Male voice quick toggle (heuristic-based gender detection across system voices)
+  - Specific voice picker (lists all device voices filtered by language)
+  - Talking-speed slider (0.6×–1.2×) and pitch slider (0.8–1.4)
+  - Language toggle: English / Español / Français (changes TTS lang only)
+  - "Test voice" button + Reset to defaults
+  - Settings persist in localStorage and apply globally
+- **Background music for Rhymes**: gentle synthesized lullaby via Web Audio API (no external assets); toggled from Settings
+- **Drag-and-drop Puzzle** (`/puzzle`): 3-shape puzzle round; pointer/touch dragging; correct slots fill with shape color; "All done!" with reset to new round
+- **Achievements / Stickers**: 11 stickers tied to taps, activity counts, and "all-rounder" milestone; unearned stickers shown desaturated; live counter ("X of 11")
+- **Magic Moment share card**: 1080×1080 canvas-generated PNG with stats, activities, and pretty pastel design — share via Web Share API (with file) or download fallback
+- **Toddler-safe mode**: full-screen + landscape orientation lock button (where supported)
+
+## Deferred Backlog
+- **P1**: True multi-language vocabulary (currently only TTS lang switches; on-screen words stay English)
+- **P2**: Pre-recorded sung nursery rhymes (currently TTS-spoken with Web-Audio melody bed)
+- **P2**: Cloud sync of progress + cross-device login (Emergent Auth)
+- **P3**: Custom child name / avatar (currently hard-coded to "Elise")
+- **P3**: Parent-set daily session timer / break reminders
+- **P3**: Add more puzzle variations (number-into-slot, animal-into-habitat)
+
+## Known caveats
+- TTS quality depends entirely on the device's installed voices. Headless/incognito browsers may have very limited voice options.
+- iOS Safari requires a user gesture before any first audio playback (handled by the user tapping a card).
+- Web Audio API for background music is initialized lazily on user interaction.
