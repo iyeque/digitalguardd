@@ -91,4 +91,5 @@ export const ACTIVITIES = [
   { id: "puzzle",   title: "Puzzles", subtitle: "Drag and drop",      path: "/puzzle",  colorClass: "wood-card-mustard", icon: "Puzzle" },
   { id: "animals",  title: "Animals", subtitle: "What do they say?",  path: "/animals", colorClass: "wood-card-pink",    icon: "Rabbit" },
   { id: "rhymes",   title: "Rhymes",  subtitle: "Sing along",         path: "/rhymes",  colorClass: "wood-card-sage",    icon: "Music" },
+  { id: "stories",  title: "Stories", subtitle: "Read me a story",    path: "/stories", colorClass: "wood-card-blue",    icon: "BookOpen" },
 ];

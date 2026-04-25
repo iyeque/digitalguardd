@@ -1,23 +1,23 @@
 // Hybrid TTS client: cloud (OpenAI via /api/tts) with browser-TTS fallback.
+// Generation-tracked to prevent overlapping/echo when many calls fire fast.
 import { getSettings } from "@/lib/voice-settings";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-// Cache: key -> blob URL
-const audioCache = new Map();
+const audioCache = new Map();   // key -> blob URL
 let currentAudio = null;
-let backendAvailable = null; // null=unknown, true/false after first call
+let generation = 0;             // increments on every speak; only newest plays
+let backendAvailable = null;
 
 const cacheKey = (text, voice, speed) => `${voice}|${speed}|${text}`;
-
 const setBackendAvailable = (v) => { backendAvailable = v; };
-
 export const isCloudTtsAvailable = () => backendAvailable !== false;
 
 export const stopCloudAudio = () => {
+  generation += 1; // invalidate any in-flight requests
   if (currentAudio) {
-    try { currentAudio.pause(); } catch (_) {}
+    try { currentAudio.pause(); currentAudio.src = ''; } catch (_) {}
     currentAudio = null;
   }
 };
@@ -34,49 +34,52 @@ const fetchAudio = async (text, voice, speed) => {
   const blob = await r.blob();
   const url = URL.createObjectURL(blob);
   audioCache.set(k, url);
-  // Bound cache to ~80 items
   if (audioCache.size > 80) {
     const firstKey = audioCache.keys().next().value;
-    const firstUrl = audioCache.get(firstKey);
-    URL.revokeObjectURL(firstUrl);
+    URL.revokeObjectURL(audioCache.get(firstKey));
     audioCache.delete(firstKey);
   }
   return url;
 };
 
-/**
- * Speak via cloud TTS. Returns a Promise that resolves when done (or rejects on failure).
- * Falls back to browser TTS automatically if cloud fails or is disabled.
- */
 export const cloudSpeak = async (text, opts = {}) => {
   const settings = getSettings();
-  if (!settings.useCloudTts) {
-    throw new Error('cloud-tts-disabled');
-  }
+  if (!settings.useCloudTts) throw new Error('cloud-tts-disabled');
+
+  // Bump generation; keep our token
   stopCloudAudio();
+  const myGen = ++generation;
+
+  let url;
   try {
-    const url = await fetchAudio(text, settings.cloudVoice || 'nova', settings.rate || 1.0);
+    url = await fetchAudio(text, settings.cloudVoice || 'nova', settings.rate || 1.0);
     setBackendAvailable(true);
-    return await new Promise((resolve, reject) => {
-      const audio = new Audio(url);
-      audio.volume = settings.volume ?? 1;
-      audio.onended = () => { if (currentAudio === audio) currentAudio = null; if (opts.onend) opts.onend(); resolve(); };
-      audio.onerror = (e) => { if (currentAudio === audio) currentAudio = null; reject(e); };
-      currentAudio = audio;
-      audio.play().catch(reject);
-    });
   } catch (err) {
     setBackendAvailable(false);
     throw err;
   }
+
+  // If a newer speak() came in while we were fetching, abandon
+  if (myGen !== generation) return;
+
+  return await new Promise((resolve, reject) => {
+    const audio = new Audio(url);
+    audio.volume = settings.volume ?? 1;
+    const onEnd = () => {
+      if (currentAudio === audio) currentAudio = null;
+      if (opts.onend) opts.onend();
+      resolve();
+    };
+    audio.onended = onEnd;
+    audio.onerror = (e) => { if (currentAudio === audio) currentAudio = null; reject(e); };
+    currentAudio = audio;
+    audio.play().catch(reject);
+  });
 };
 
 export const warmCloud = async () => {
   try {
     const r = await fetch(`${API}/health`);
-    if (r.ok) {
-      const j = await r.json();
-      setBackendAvailable(!!j.tts);
-    }
+    if (r.ok) { const j = await r.json(); setBackendAvailable(!!j.tts); }
   } catch (_) { setBackendAvailable(false); }
 };

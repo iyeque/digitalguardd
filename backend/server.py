@@ -1,5 +1,5 @@
 from fastapi import FastAPI, APIRouter, HTTPException
-from fastapi.responses import Response
+from fastapi.responses import Response, StreamingResponse
 from pydantic import BaseModel, Field
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
@@ -9,6 +9,7 @@ import os
 import logging
 import hashlib
 import asyncio
+import httpx
 from pathlib import Path
 from typing import Optional
 
@@ -118,6 +119,143 @@ async def synthesize(req: TtsRequest):
 @api_router.get("/health")
 async def health():
     return {"ok": True, "tts": bool(EMERGENT_LLM_KEY)}
+
+
+# ---------- Curated nursery rhyme audio (public domain, archive.org) ----------
+RHYME_SOURCES = {
+    "twinkle": {
+        "title": "Twinkle Twinkle Little Star",
+        "url": "https://archive.org/download/78_twinkle-twinkle-little-star_gbia0533998b/TWINKLE%20TWINKLE%20LITTLE%20STAR.mp3",
+    },
+    "macdonald": {
+        "title": "Old MacDonald Had a Farm",
+        "url": "https://archive.org/download/78_old-macdonald-had-a-farm_gbia0431356a/OLD%20MACDONALD%20HAD%20A%20FARM.mp3",
+    },
+    "baabaa": {
+        "title": "Baa Baa Black Sheep",
+        "url": "https://archive.org/download/78_3-baa-baa-black-sheep_gbia0210109c/3.%20BAA%20BAA%20BLACK%20SHEEP.mp3",
+    },
+}
+
+_audio_cache: dict[str, bytes] = {}
+_audio_cache_lock = asyncio.Lock()
+
+
+@api_router.get("/audio/rhymes")
+async def rhymes_index():
+    return {
+        "rhymes": [
+            {"slug": k, "title": v["title"], "available": True}
+            for k, v in RHYME_SOURCES.items()
+        ]
+    }
+
+
+@api_router.get("/audio/rhyme/{slug}")
+async def rhyme_audio(slug: str):
+    if slug not in RHYME_SOURCES:
+        raise HTTPException(status_code=404, detail="Unknown rhyme")
+    if slug in _audio_cache:
+        return Response(content=_audio_cache[slug], media_type="audio/mpeg",
+                        headers={"X-Cache": "HIT", "Cache-Control": "public, max-age=31536000"})
+    async with _audio_cache_lock:
+        if slug in _audio_cache:
+            return Response(content=_audio_cache[slug], media_type="audio/mpeg",
+                            headers={"X-Cache": "HIT", "Cache-Control": "public, max-age=31536000"})
+        url = RHYME_SOURCES[slug]["url"]
+        try:
+            async with httpx.AsyncClient(follow_redirects=True, timeout=30.0) as client:
+                r = await client.get(url, headers={"User-Agent": "EliseLearns/1.0"})
+                r.raise_for_status()
+                _audio_cache[slug] = r.content
+        except Exception as e:
+            logging.exception("rhyme fetch failed")
+            raise HTTPException(status_code=502, detail=f"Source fetch failed: {e}")
+    return Response(content=_audio_cache[slug], media_type="audio/mpeg",
+                    headers={"X-Cache": "MISS", "Cache-Control": "public, max-age=31536000"})
+
+
+# ---------- Stories ----------
+STORIES = [
+    {
+        "id": "tiny-bunny",
+        "title": "Tiny Bunny's First Hop",
+        "color": "#9CBFA7",
+        "lines": [
+            "Tiny Bunny woke up under a soft moon.",
+            "She wiggled her nose and stretched her tiny ears.",
+            "Hop! Hop! Hop! Across the cool green grass.",
+            "She found a clover, big and round and sweet.",
+            "Munch, munch, munch — what a happy little bunny.",
+            "Then she snuggled home and dreamed of clouds.",
+        ],
+    },
+    {
+        "id": "blue-balloon",
+        "title": "The Blue Balloon",
+        "color": "#A1BCE3",
+        "lines": [
+            "A blue balloon floated way up high.",
+            "It waved hello to a passing bird.",
+            "It bounced on a cloud, soft and white.",
+            "The wind sang a song and gave it a push.",
+            "Down, down, down it drifted to a child.",
+            "She caught it tight and laughed and laughed.",
+        ],
+    },
+    {
+        "id": "sleepy-puppy",
+        "title": "Sleepy Puppy and the Star",
+        "color": "#F0B8C6",
+        "lines": [
+            "Puppy could not sleep tonight.",
+            "He looked outside and saw a tiny star.",
+            "The star winked, just for him.",
+            "Puppy yawned a great big yawn.",
+            "He curled up warm and shut his eyes.",
+            "The star kept watch all through the night.",
+        ],
+    },
+    {
+        "id": "apple-tree",
+        "title": "The Apple Tree's Gift",
+        "color": "#E89D8A",
+        "lines": [
+            "An apple tree grew by a little stream.",
+            "Each apple was red and round and bright.",
+            "A small girl came and shared her song.",
+            "The tree dropped one apple in her hand.",
+            "Crunch! It tasted of summer and sun.",
+            "She said thank you with a happy smile.",
+        ],
+    },
+    {
+        "id": "kind-cloud",
+        "title": "The Kind Little Cloud",
+        "color": "#F2CA7E",
+        "lines": [
+            "A little cloud was small and shy.",
+            "Other clouds drifted by, tall and proud.",
+            "Below, the flowers wilted in the sun.",
+            "The little cloud made gentle rain just for them.",
+            "The flowers cheered up and said hello.",
+            "The little cloud was small but full of love.",
+        ],
+    },
+]
+
+
+@api_router.get("/stories")
+async def list_stories():
+    return {"stories": STORIES}
+
+
+@api_router.get("/stories/{story_id}")
+async def get_story(story_id: str):
+    for s in STORIES:
+        if s["id"] == story_id:
+            return s
+    raise HTTPException(status_code=404, detail="Story not found")
 
 
 app.include_router(api_router)

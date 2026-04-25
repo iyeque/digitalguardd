@@ -13,6 +13,7 @@ export const ACHIEVEMENTS = [
   { id: "tiny-singer",      label: "Tiny Singer",     desc: "Played a rhyme",                   sticker: "Music",    color: "#9CBFA7", check: (p) => (p.activities?.rhymes?.taps || 0) >= 1 },
   { id: "puzzler",          label: "Puzzler",         desc: "Solved 3 puzzles",                 sticker: "Puzzle",   color: "#E89D8A", check: (p) => (p.activities?.puzzle?.taps || 0) >= 3 },
   { id: "tracer",           label: "Tracer",          desc: "Traced 3 letters",                 sticker: "PenLine",  color: "#A1BCE3", check: (p) => (p.activities?.trace?.taps || 0) >= 3 },
+  { id: "story-time",       label: "Story Time",      desc: "Listened to a story",              sticker: "BookOpen", color: "#A1BCE3", check: (p) => (p.activities?.stories?.taps || 0) >= 1 },
   { id: "all-rounder",      label: "All Rounder",     desc: "Visited all activities",           sticker: "Crown",    color: "#F2CA7E",
     check: (p) => ACTIVITIES.every(a => (p.activities?.[a.id]?.opens || 0) >= 1) },
 ];

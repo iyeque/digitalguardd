@@ -11,11 +11,11 @@ import { getWeeklySeconds, getTodaySeconds } from "@/lib/session-time";
 import { getSettings } from "@/lib/voice-settings";
 import {
   Trash2, Sparkles, Clock, MousePointerClick, Settings, Share2, Download,
-  Star, Trophy, Type, Hash, Palette as PaletteIcon, Shapes as ShapesIcon, Rabbit, Music, Puzzle, Crown, PenLine, CalendarDays,
+  Star, Trophy, Type, Hash, Palette as PaletteIcon, Shapes as ShapesIcon, Rabbit, Music, Puzzle, Crown, PenLine, CalendarDays, BookOpen,
 } from "lucide-react";
 
 const STICKER_ICONS = {
-  Sparkles, Star, Trophy, Type, Hash, Palette: PaletteIcon, Shapes: ShapesIcon, Rabbit, Music, Puzzle, Crown, PenLine,
+  Sparkles, Star, Trophy, Type, Hash, Palette: PaletteIcon, Shapes: ShapesIcon, Rabbit, Music, Puzzle, Crown, PenLine, BookOpen,
 };
 
 const formatDate = (iso) => {

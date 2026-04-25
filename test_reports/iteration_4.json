@@ -1,0 +1,35 @@
+{
+  "summary": "Iteration 4 backend + frontend verified end-to-end against the public preview. Backend (6/6 pytest pass): /api/audio/rhymes returns {twinkle,macdonald,baabaa}; /api/audio/rhyme/twinkle streams audio/mpeg with body=842KB on first hit, second call returns X-Cache:HIT; /api/audio/rhyme/invalid -> 404; /api/stories returns 5 entries (tiny-bunny, blue-balloon, sleepy-puppy, apple-tree, kind-cloud) each with id/title/color/lines and exactly 6 lines; /api/stories/tiny-bunny returns the full story; /api/stories/nope -> 404. Frontend (all critical assertions PASS): /rhymes shows 'Sung version available' on Twinkle/Old MacDonald/Baa Baa and 'Spoken version' on The Itsy Bitsy Spider; with Twinkle active rhyme-mode-toggle is visible (sung+spoken sub-buttons) and play-rhyme-btn label is 'Sing it'; selecting Itsy Bitsy hides rhyme-mode-toggle and play-rhyme-btn label becomes 'Play'; clicking Sing it on Twinkle fires GET /api/audio/rhyme/twinkle (verified via request listener). /stories renders stories-page with 5 buttons matching the expected ids; default story-title is \"Tiny Bunny's First Hop\" and progress is '1 / 5'; clicking story-pick-blue-balloon updates title to 'The Blue Balloon'; play-story-btn flips to stop-story-btn on click; story-next cycles 1/5→2/5→3/5→4/5→5/5→1/5 (story-prev path symmetric). Home shows 9 activity cards including activity-card-stories. /parent/settings exposes data-testid=voice-library with 6 voice-record-* and 6 voice-upload-* rows; voice-custom-phrase-input is visible; voice-custom-upload exists in DOM as <input type=file display:none> (intentionally hidden — the visible label triggers it). /parent shows sticker-story-time. TTS echo fix verified on /abc: after 5 rapid clicks on the Tap-me button, exactly 1 HTMLAudioElement was created and at most 1 was actively playing (window.speechSynthesis.speaking=false, total=1, playing=1) — older generations are correctly invalidated by the generation counter in tts-client.js. Zero JS console errors across all tested routes.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_iter4.py",
+    "/app/test_reports/pytest/iter4_results.xml"
+  ],
+  "action_items": [
+    "Optional testability: the 'Tap me' pill button on /abc cards has no data-testid (current selectors are 'prev-letter-btn'/'next-letter-btn'/'back-to-home-btn'/'parent-gear-btn' only). Add e.g. data-testid='abc-tap-me-btn' to make audio-trigger flows easier to assert.",
+    "Optional: voice-custom-upload is the hidden <input type=file>; consider also exposing data-testid on the visible 'Upload' button label for clarity. Functionally fine."
+  ],
+  "critical_code_review_comments": [
+    "server.py /api/audio/rhyme/{slug}: in-memory cache with asyncio.Lock prevents thundering herd on first miss. Good. Consider bounding _audio_cache size like _tts_cache (currently unbounded — only 3 entries today but easy to overlook if rhymes list grows).",
+    "server.py: httpx fetch from archive.org with 30s timeout and follow_redirects=True is correct; raises 502 on failure with original exception text — acceptable.",
+    "Stories endpoint is purely static module-level data — no MongoDB IO, so /api/stories has near-zero latency. Fine for MVP.",
+    "Rhymes.jsx: audio.onerror falls back to playSpoken() with state cleanup — robust. The line-highlight timer is recomputed onloadedmetadata (not on every play), which avoids re-firing for resumed plays. Looks correct.",
+    "Stories.jsx: line scheduling uses cumulative setTimeout with min 2400ms per line. If user rapidly clicks Read it / Stop the cleanup pattern (clearTimeout + stopSpeech + setLineIdx(-1)) is sound. Good.",
+    "tts-client.js generation-tracking confirmed via observable behaviour: 5 rapid speak() calls produced exactly 1 surviving HTMLAudioElement. Echo bug is fixed.",
+    "VoiceLibrary uses IndexedDB (voice-clips.js) — no quota handling visible; if a parent records ~20 long clips, browser may evict. Low priority for current 6-preset scope."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_iter4.py (new)"
+  ],
+  "success_rate": {"backend": "100% (6/6)", "frontend": "100% on all required assertions"},
+  "test_credentials": "n/a (no auth)",
+  "seed_data_creation": "none",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Public URL: https://tiny-learners-60.preview.emergentagent.com. Iter4 added: 3 sung rhymes (twinkle/macdonald/baabaa) proxied from archive.org with in-memory cache; 5 static stories; VoiceLibrary panel in /parent/settings; sticker-story-time in /parent; activity-card-stories on home; new /stories route. Echo fix is in /app/frontend/src/lib/tts-client.js (generation counter) and speech.js (async, stops everything first). To test echo headless: inject HTMLAudioElement.prototype.play wrapper, click Tap me 5x in 70ms intervals, wait 3.5s, verify <=1 active audio. Audio fetch from archive.org takes ~3-5s on first hit so first /api/audio/rhyme/twinkle response can be slow; keep timeout >=30s. voice-custom-upload is intentionally a hidden <input type=file> — query DOM rather than is_visible. The 'Tap me' button on /abc has no data-testid; use page.get_by_text('Tap me').first."
+}

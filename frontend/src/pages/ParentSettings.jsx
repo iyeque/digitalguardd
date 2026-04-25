@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { getSettings, updateSettings, listVoices, DEFAULTS } from "@/lib/voice-settings";
 import { sayTest } from "@/lib/speech";
 import { Volume2, User, UserRound, Maximize2, Cloud, Monitor } from "lucide-react";
+import VoiceLibrary from "@/components/elise/VoiceLibrary";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -249,6 +250,11 @@ export default function ParentSettings() {
             <Maximize2 size={24} strokeWidth={3} color="#5A524D" />
             <span className="font-display font-bold text-lg text-[#5A524D]">Enter full-screen</span>
           </button>
+        </Panel>
+
+        {/* Custom voice library */}
+        <Panel title="Your own voice clips" subtitle="Record or upload phrases — they'll play automatically when the app says them.">
+          <VoiceLibrary childName={settings.childName} />
         </Panel>
 
         <div className="flex justify-center gap-3 pt-2 flex-wrap">

@@ -1,5 +1,6 @@
 import { getSettings, inferGender } from "@/lib/voice-settings";
 import { cloudSpeak, stopCloudAudio, warmCloud } from "@/lib/tts-client";
+import { tryPlayCustom, stopCustom } from "@/lib/voice-clips";
 
 let voicesCache = null;
 
@@ -14,7 +15,6 @@ if ('speechSynthesis' in window) {
   window.speechSynthesis.onvoiceschanged = () => { voicesCache = window.speechSynthesis.getVoices(); };
 }
 
-// Warm the backend so we know if cloud TTS is reachable
 warmCloud();
 
 const pickVoice = (settings) => {
@@ -55,30 +55,34 @@ const browserSpeak = (text, opts) => {
   } catch (_) {}
 };
 
-export const speak = (text, opts = {}) => {
-  const settings = getSettings();
-  // Stop both engines first to avoid overlap
-  if ('speechSynthesis' in window) {
-    try { window.speechSynthesis.cancel(); } catch (_) {}
-  }
+// Stop everything that could be playing
+export const stopSpeech = () => {
+  if ('speechSynthesis' in window) { try { window.speechSynthesis.cancel(); } catch (_) {} }
   stopCloudAudio();
-
-  if (settings.useCloudTts) {
-    cloudSpeak(text, opts).catch(() => {
-      // Fallback to browser TTS on any failure
-      browserSpeak(text, opts);
-    });
-  } else {
-    browserSpeak(text, opts);
-  }
+  stopCustom();
 };
 
-export const stopSpeech = () => {
-  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-  stopCloudAudio();
+export const speak = async (text, opts = {}) => {
+  stopSpeech();
+  const settings = getSettings();
+
+  // 1. Custom voice clip wins if available
+  try {
+    const played = await tryPlayCustom(text, opts);
+    if (played) return;
+  } catch (_) {}
+
+  // 2. Cloud TTS
+  if (settings.useCloudTts) {
+    cloudSpeak(text, opts).catch(() => browserSpeak(text, opts));
+    return;
+  }
+
+  // 3. Browser TTS fallback
+  browserSpeak(text, opts);
 };
 
 export const sayTest = () => {
-  const settings = getSettings();
-  speak(`Hi ${settings.childName || "friend"}! I'm your reading buddy. Let's learn together.`);
+  const s = getSettings();
+  speak(`Hi ${s.childName || "friend"}! I'm your reading buddy. Let's learn together.`);
 };
