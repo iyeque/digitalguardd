@@ -47,9 +47,16 @@ Elise Learns
 - **README.md** at repo root with setup & Vercel instructions
 - **Audio cache** — backend caches TTS bytes per (voice, speed, text); second identical request returns instantly with `X-Cache: HIT`
 
+### Iteration 4 — Sung rhymes, echo fix, voice library, stories (this release)
+- **Real sung nursery rhymes** — 3 of 4 rhymes (Twinkle, Old MacDonald, Baa Baa Black Sheep) now play actual public-domain 78-RPM recordings, fetched from archive.org and cached server-side. UI lets parent toggle Sung ⇄ Spoken. Itsy Bitsy Spider falls back to spoken automatically.
+- **OpenAI TTS echo bug fixed** — `tts-client.js` now uses a generation counter so rapid taps cancel any in-flight audio. Verified by testing agent: 5 rapid clicks produce exactly 1 surviving `<audio>` element (was multiple before).
+- **Custom voice library** — Parents can record (MediaRecorder) or upload audio for 6 preset phrases ("Hi {name}", "Great job!", "Try again.", "All done!", "Let's play.", "I love you."), plus arbitrary custom phrases. Stored in IndexedDB. `speak()` checks the library first and plays the parent's voice when text matches.
+- **Read me a story** mode — new `/stories` route with 5 hand-written 6-line illustrated stories (Tiny Bunny's First Hop, The Blue Balloon, Sleepy Puppy and the Star, The Apple Tree's Gift, The Kind Little Cloud). Each story has a unique pastel colorway. New "Story Time" sticker.
+- **Backend additions**: `/api/audio/rhymes`, `/api/audio/rhyme/{slug}` (proxy + cache), `/api/stories`, `/api/stories/{id}`.
+
 ### Test results
-- Backend: 6/6 pytest passing (health, voices list, audio bytes, cache hit, validation 400/422)
-- Frontend: 100% — all routes load, all testids present, child-name personalisation works, drag-drop puzzle and tracing canvas function
+- Backend: 6/6 pytest passing (rhymes index, audio bytes, X-Cache HIT, 404s, stories index, single story, missing story)
+- Frontend: 100% on all required assertions; zero console errors across all 12 routes
 
 ## Deferred Backlog
 - **P0**: Cross-device sync via Emergent Google Auth (auth flow + `/api/sync` endpoints + conflict resolution). Playbook fetched but deferred for focused iteration.
