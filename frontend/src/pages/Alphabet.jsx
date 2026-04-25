@@ -18,7 +18,7 @@ export default function Alphabet() {
   const sayLetter = () => {
     trackTap("alphabet");
     setBump(b => b + 1);
-    speak(`${current.letter}. ${current.letter} for ${current.word}.`);
+    speak(`${current.letter} is for ${current.word}.`);
   };
 
   const next = () => { setIdx((i) => (i + 1) % ALPHABET.length); };

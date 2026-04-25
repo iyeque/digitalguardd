@@ -17,7 +17,7 @@ export default function Animals() {
   const onTap = (a) => {
     setActive(a.name);
     trackTap("animals");
-    speak(`${a.name}. ${a.emoji}`);
+    speak(`${a.name} says ${a.emoji}`);
     setTimeout(() => setActive(null), 1200);
   };
 
