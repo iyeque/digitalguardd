@@ -1,0 +1,112 @@
+{
+  "theme": "light",
+  "archetype": "Archetype 3 (Pastel & Soft) + Montessori Wooden Aesthetic",
+  "mood": "Calm, inviting, tactile, encouraging, natural, non-stimulating",
+  "typography": {
+    "heading_font": "Fredoka",
+    "body_font": "Nunito",
+    "hierarchy": {
+      "h1": "text-5xl sm:text-6xl tracking-tight font-bold",
+      "h2": "text-4xl sm:text-5xl tracking-tight font-bold",
+      "h3": "text-2xl sm:text-3xl font-semibold",
+      "body": "text-lg sm:text-xl font-medium text-slate-700",
+      "button": "text-2xl sm:text-3xl font-bold tracking-wide"
+    }
+  },
+  "colors": {
+    "background": {
+      "primary": "#FDFBF7",
+      "secondary": "#F3EFE6"
+    },
+    "text": {
+      "primary": "#5A524D",
+      "secondary": "#8A817C",
+      "light": "#FFFFFF"
+    },
+    "accents": {
+      "sage": "#9CBFA7",
+      "mustard": "#F2CA7E",
+      "coral": "#E89D8A",
+      "dusty_blue": "#A1BCE3",
+      "soft_pink": "#F0B8C6"
+    },
+    "wood_shadow": "rgba(90, 82, 77, 0.15)",
+    "wood_shadow_dark": "rgba(90, 82, 77, 0.3)"
+  },
+  "spacing_and_layout": {
+    "container_padding": "p-6 md:p-12",
+    "grid_gap": "gap-6 sm:gap-8",
+    "border_radius": "rounded-3xl sm:rounded-[2rem]",
+    "touch_targets": {
+      "minimum": "min-h-[80px] min-w-[80px]",
+      "recommended": "min-h-[120px] p-6"
+    }
+  },
+  "surface_strategy": {
+    "name": "The Wooden Block",
+    "description": "Elements should look like painted matte wooden blocks. No shiny gradients. Flat pastel background, chunky bottom shadow for 3D depth, and soft white inner top-highlight.",
+    "classes": {
+      "card_default": "bg-white border-2 border-[#EAE3D9] rounded-3xl shadow-[0_8px_0_0_rgba(234,227,217,1)] transition-transform duration-200",
+      "card_sage": "bg-[#9CBFA7] border-2 border-[#82A88D] rounded-3xl shadow-[0_8px_0_0_#82A88D] text-white",
+      "card_mustard": "bg-[#F2CA7E] border-2 border-[#D9B064] rounded-3xl shadow-[0_8px_0_0_#D9B064] text-[#5A524D]",
+      "card_coral": "bg-[#E89D8A] border-2 border-[#D1826E] rounded-3xl shadow-[0_8px_0_0_#D1826E] text-white",
+      "card_blue": "bg-[#A1BCE3] border-2 border-[#89A6CF] rounded-3xl shadow-[0_8px_0_0_#89A6CF] text-white",
+      "interactive_hover": "hover:-translate-y-1 hover:brightness-105",
+      "interactive_active": "active:translate-y-[6px] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2)]",
+      "parent_dashboard_panel": "bg-white/80 backdrop-blur-xl border-4 border-white rounded-[2.5rem] shadow-xl p-8 sm:p-12"
+    }
+  },
+  "animations": {
+    "entrance": "Staggered spring animations (framer-motion). Type: 'spring', stiffness: 200, damping: 20.",
+    "interactions": "Scale down and shadow reduction on click to mimic physically pushing a wooden block down."
+  },
+  "icons_and_assets": {
+    "library": "lucide-react",
+    "icon_style": "Large sizes (size={64} or size={80}), thick stroke (strokeWidth={3}), rounded edges. Avoid sharp geometric icons.",
+    "media": {
+      "images": [
+        {
+          "category": "app_background",
+          "url": "https://static.prod-images.emergentagent.com/jobs/4631f13f-6176-4f1a-9a11-cb34afa695b5/images/cc5a2a7aa3ffd174591237949b9bfb4aad470a110c99f508fb2db26820983904.png",
+          "description": "Abstract calm creamy background with soft sage water-color texture. Use as a fixed full-screen background z-[-1] with opacity-60."
+        },
+        {
+          "category": "animal_toy_lion",
+          "url": "https://static.prod-images.emergentagent.com/jobs/4631f13f-6176-4f1a-9a11-cb34afa695b5/images/0e5359b9824203f784b90aa650415a974ebd906b6d220a79147f00194e0a05f9.png",
+          "description": "Wooden painted lion face. Use in Animal Sounds game."
+        },
+        {
+          "category": "animal_toy_elephant",
+          "url": "https://static.prod-images.emergentagent.com/jobs/4631f13f-6176-4f1a-9a11-cb34afa695b5/images/6f4d789fc63387ba798aff9b7456829be84201e4c8211bdc09af56aa663cba49.png",
+          "description": "Wooden painted elephant face. Use in Animal Sounds game."
+        },
+        {
+          "category": "animal_toy_pig",
+          "url": "https://static.prod-images.emergentagent.com/jobs/4631f13f-6176-4f1a-9a11-cb34afa695b5/images/bb6cb955ed4a6625a07cb8a16d593e36df8fc6d2eb5a460238e1c0e8b00b1a8e.png",
+          "description": "Wooden painted pig face. Use in Animal Sounds game."
+        },
+        {
+          "category": "parent_dashboard_accent",
+          "url": "https://images.pexels.com/photos/8409851/pexels-photo-8409851.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "description": "Montessori wooden toys flatlay. Use as a small aesthetic header image or side graphic in the Parent Dashboard."
+        }
+      ]
+    }
+  },
+  "component_guidelines": {
+    "activity_cards": "Bento grid structure. Each card must be massive (min 200px height), single icon, large text, utilizing one of the specific pastel block styles (e.g., card_sage, card_coral).",
+    "buttons": "Do not use standard Shadcn buttons for the toddler interface. Build custom 'wooden block' buttons using the surface_strategy classes. Standard Shadcn buttons can be used ONLY in the Parent Dashboard.",
+    "navigation": "Extremely simple. Always provide a massive 'Home' or 'Back' button (min 80x80px) in the top left during activities.",
+    "audio": "Integrate Web Speech API (window.speechSynthesis) to speak the names of letters, numbers, animals, and colors when tapped. No background music unless in the nursery rhyme section.",
+    "testing": "All interactive elements MUST have a data-testid attribute (e.g., data-testid='activity-card-alphabet', data-testid='back-to-home-btn')."
+  },
+  "instructions_to_main_agent": [
+    "Install fonts: Fredoka and Nunito via Google Fonts.",
+    "Ensure the app is a Single Page Application (SPA). Keep all 6 activities easily reachable from the home grid.",
+    "Implement the 'Wooden Block' CSS exactly as specified in surface_strategy to achieve the tactile Montessori feel.",
+    "Avoid typical high-stimulation UI elements like fast spinners, intense gradients, or confetti. Use gentle spring physics and soft audio feedback.",
+    "For the Parent Dashboard, include a simple hidden entry point (e.g., holding a gear icon for 3 seconds, or a hidden corner tap) to prevent toddlers from accidentally entering it.",
+    "Parent Dashboard must use local storage to track which activities were opened and click counts to simulate 'time spent'.",
+    "Always use the provided generated images for the animal sound activity and backgrounds."
+  ]
+}
