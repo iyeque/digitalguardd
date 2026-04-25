@@ -1,10 +1,11 @@
 import { Link } from "react-router-dom";
 import { ACTIVITIES } from "@/lib/data";
 import { Layout } from "@/components/elise/Layout";
-import { Type, Hash, Palette, Shapes, Rabbit, Music, Sparkles, Puzzle } from "lucide-react";
+import { Type, Hash, Palette, Shapes, Rabbit, Music, Sparkles, Puzzle, PenLine } from "lucide-react";
 import { speak } from "@/lib/speech";
+import { getSettings } from "@/lib/voice-settings";
 
-const ICONS = { Type, Hash, Palette, Shapes, Rabbit, Music, Puzzle };
+const ICONS = { Type, Hash, Palette, Shapes, Rabbit, Music, Puzzle, PenLine };
 
 export default function Home() {
   return (
@@ -14,7 +15,7 @@ export default function Home() {
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border-2 border-[#EAE3D9] mb-5">
             <Sparkles size={18} strokeWidth={3} color="#9CBFA7" />
             <span className="text-sm sm:text-base font-bold text-[#8A817C] tracking-wide">
-              ELISE LEARNS · for tiny hands
+              {(getSettings().childName || "ELISE").toUpperCase()} LEARNS · for tiny hands
             </span>
           </div>
           <h1
@@ -22,7 +23,7 @@ export default function Home() {
             style={{ color: "#5A524D" }}
             data-testid="home-title"
           >
-            Hi Elise! <span className="inline-block animate-float">Let's play.</span>
+            Hi {getSettings().childName || "friend"}! <span className="inline-block animate-float">Let's play.</span>
           </h1>
           <p className="mt-4 text-lg sm:text-xl text-[#8A817C] font-medium max-w-xl mx-auto">
             Tap a wooden block to start a tiny adventure.

@@ -2,13 +2,22 @@
 const KEY = 'elise_voice_settings_v1';
 
 export const DEFAULTS = {
-  voiceURI: null,        // null => auto-pick best
-  gender: 'female',      // 'female' | 'male' | 'auto' — used for auto-pick
-  rate: 0.9,             // 0.6 - 1.1
+  voiceURI: null,        // null => auto-pick best (browser TTS fallback)
+  gender: 'female',      // 'female' | 'male' | 'auto'
+  rate: 1.0,             // 0.6 - 1.2
   pitch: 1.1,            // 0.9 - 1.3
   volume: 1,
   lang: 'en-US',
   bgMusicEnabled: false, // for rhymes page
+  // Cloud TTS (OpenAI)
+  useCloudTts: true,     // primary engine
+  cloudVoice: 'nova',    // alloy|ash|coral|echo|fable|nova|onyx|sage|shimmer
+  // Personalisation
+  childName: 'Elise',
+  // Phonics
+  phonicsMode: false,    // when true, ABC speaks letter sounds (buh) not names (bee)
+  // Daily session timer (minutes); 0 = unlimited
+  dailyLimitMins: 0,
 };
 
 const read = () => {

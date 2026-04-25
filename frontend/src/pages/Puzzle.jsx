@@ -2,15 +2,24 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Layout } from "@/components/elise/Layout";
 import { speak } from "@/lib/speech";
 import { trackOpen, trackTap } from "@/lib/tracking";
-import { Circle, Square, Triangle, Star, Heart, Hexagon, Check, RefreshCw } from "lucide-react";
+import { Circle, Square, Triangle, Star, Heart, Hexagon, Check, RefreshCw, Apple } from "lucide-react";
 
-const SHAPES = [
+const SHAPE_DEFS = [
   { name: "Circle",   Icon: Circle,   color: "#E89D8A" },
   { name: "Square",   Icon: Square,   color: "#F2CA7E" },
   { name: "Triangle", Icon: Triangle, color: "#9CBFA7" },
   { name: "Star",     Icon: Star,     color: "#A1BCE3" },
   { name: "Heart",    Icon: Heart,    color: "#F0B8C6" },
   { name: "Hexagon",  Icon: Hexagon,  color: "#C4B0DD" },
+];
+
+const NUMBER_DEFS = [
+  { name: "1", color: "#E89D8A" },
+  { name: "2", color: "#F2CA7E" },
+  { name: "3", color: "#9CBFA7" },
+  { name: "4", color: "#A1BCE3" },
+  { name: "5", color: "#F0B8C6" },
+  { name: "6", color: "#C4B0DD" },
 ];
 
 const shuffle = (arr) => {
@@ -22,21 +31,32 @@ const shuffle = (arr) => {
   return a;
 };
 
-const pickRound = () => {
+const pickRound = (defs) => {
   const indices = shuffle([0, 1, 2, 3, 4, 5]).slice(0, 3);
   const slotsOrder = shuffle([...indices]);
-  return { piecesOrder: indices, slotsOrder };
+  return { piecesOrder: indices, slotsOrder, defs };
 };
 
 export default function Puzzle() {
-  const [round, setRound] = useState(pickRound());
-  const [placed, setPlaced] = useState({}); // { slotIdx: pieceIdx }
-  const [dragging, setDragging] = useState(null); // { pieceIdx, x, y, originX, originY }
+  const [variant, setVariant] = useState("shapes"); // 'shapes' | 'numbers'
+  const defs = variant === "shapes" ? SHAPE_DEFS : NUMBER_DEFS;
+  const [round, setRound] = useState(() => pickRound(defs));
+  const [placed, setPlaced] = useState({});
+  const [dragging, setDragging] = useState(null);
   const [pulse, setPulse] = useState(null);
   const [done, setDone] = useState(false);
   const slotRefs = useRef({});
 
-  useEffect(() => { trackOpen("puzzle"); speak("Drag each shape into its matching slot."); }, []);
+  useEffect(() => { trackOpen("puzzle"); speak("Drag each piece into its matching slot."); }, []);
+
+  // When variant changes, reset
+  useEffect(() => {
+    setRound(pickRound(defs));
+    setPlaced({});
+    setDone(false);
+    speak(variant === "numbers" ? "Match the numbers." : "Match the shapes.");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [variant]);
 
   const remainingPieces = useMemo(() =>
     round.piecesOrder.filter(p => !Object.values(placed).includes(p)),
@@ -47,7 +67,7 @@ export default function Puzzle() {
     e.preventDefault();
     const point = e.touches ? e.touches[0] : e;
     setDragging({ pieceIdx, x: point.clientX, y: point.clientY });
-    speak(SHAPES[pieceIdx].name);
+    speak(defs[pieceIdx].name);
     trackTap("puzzle");
   };
 
@@ -60,7 +80,6 @@ export default function Puzzle() {
     const end = (e) => {
       const point = (e.changedTouches ? e.changedTouches[0] : e);
       const x = point.clientX, y = point.clientY;
-      // find slot under pointer
       let hitSlotIdx = null;
       Object.entries(slotRefs.current).forEach(([key, el]) => {
         if (!el) return;
@@ -72,11 +91,10 @@ export default function Puzzle() {
       if (hitSlotIdx !== null) {
         const slotShape = round.slotsOrder[hitSlotIdx];
         if (slotShape === dragging.pieceIdx && placed[hitSlotIdx] === undefined) {
-          // correct
           const next = { ...placed, [hitSlotIdx]: dragging.pieceIdx };
           setPlaced(next);
           setPulse(hitSlotIdx);
-          speak(`Yes! ${SHAPES[dragging.pieceIdx].name}.`);
+          speak(`Yes! ${defs[dragging.pieceIdx].name}.`);
           trackTap("puzzle");
           setTimeout(() => setPulse(null), 700);
           if (Object.keys(next).length === round.slotsOrder.length) {
@@ -99,28 +117,69 @@ export default function Puzzle() {
       window.removeEventListener('touchmove', move);
       window.removeEventListener('touchend', end);
     };
-  }, [dragging, placed, round]);
+  }, [dragging, placed, round, defs]);
 
   const reset = () => {
     setPlaced({});
     setDone(false);
-    setRound(pickRound());
-    speak("New puzzle! Drag the shapes.");
+    setRound(pickRound(defs));
+    speak("New puzzle!");
+  };
+
+  const renderPiece = (def, opts = {}) => {
+    const size = opts.size || 70;
+    if (variant === "shapes") {
+      const Icon = def.Icon;
+      return <Icon size={size} strokeWidth={3} color="#FFF" fill="#FFF" fillOpacity={0.6} />;
+    }
+    return (
+      <span className="font-display font-bold text-white" style={{ fontSize: size }}>
+        {def.name}
+      </span>
+    );
+  };
+
+  const renderSlotIcon = (def, isDone) => {
+    if (variant === "shapes") {
+      const Icon = def.Icon;
+      return <Icon size={88} strokeWidth={3} color={isDone ? def.color : '#C8C0B5'} fill={isDone ? def.color : 'transparent'} fillOpacity={isDone ? 0.45 : 0} />;
+    }
+    return (
+      <span className="font-display font-bold" style={{ fontSize: 88, color: isDone ? def.color : '#C8C0B5', opacity: isDone ? 1 : 0.4 }}>
+        {def.name}
+      </span>
+    );
   };
 
   return (
     <Layout title="Puzzles">
       <section className="max-w-5xl mx-auto" data-testid="puzzle-page">
-        <p className="text-center text-lg sm:text-xl text-[#8A817C] font-semibold mb-8">
-          Drag each shape into its matching outline.
+        {/* Variant selector */}
+        <div className="grid grid-cols-2 gap-3 max-w-md mx-auto mb-6" data-testid="puzzle-variant-toggle">
+          <button
+            onClick={() => setVariant("shapes")}
+            data-testid="puzzle-variant-shapes"
+            className={`wood-press rounded-2xl py-4 font-display font-bold text-lg ${variant === "shapes" ? 'wood-card-blue text-white' : 'wood-card text-[#5A524D]'}`}
+          >
+            Shapes
+          </button>
+          <button
+            onClick={() => setVariant("numbers")}
+            data-testid="puzzle-variant-numbers"
+            className={`wood-press rounded-2xl py-4 font-display font-bold text-lg ${variant === "numbers" ? 'wood-card-mustard text-[#5A524D]' : 'wood-card text-[#5A524D]'}`}
+          >
+            Numbers
+          </button>
+        </div>
+
+        <p className="text-center text-base sm:text-lg text-[#8A817C] font-semibold mb-7">
+          Drag each piece into its matching outline.
         </p>
 
-        {/* Slots */}
         <div className="grid grid-cols-3 gap-5 sm:gap-8 mb-12" data-testid="puzzle-slots">
-          {round.slotsOrder.map((shapeIdx, slotIdx) => {
-            const S = SHAPES[shapeIdx];
-            const filledPiece = placed[slotIdx];
-            const isDone = filledPiece !== undefined;
+          {round.slotsOrder.map((idx, slotIdx) => {
+            const def = defs[idx];
+            const filled = placed[slotIdx] !== undefined;
             return (
               <div
                 key={slotIdx}
@@ -129,33 +188,24 @@ export default function Puzzle() {
                 className={`wood-card rounded-3xl flex items-center justify-center transition-transform ${pulse === slotIdx ? 'animate-wiggle' : ''}`}
                 style={{
                   minHeight: 160,
-                  background: isDone ? S.color + '22' : 'repeating-linear-gradient(45deg, #FAF6EE, #FAF6EE 10px, #F3EFE6 10px, #F3EFE6 20px)',
+                  background: filled ? def.color + '22' : 'repeating-linear-gradient(45deg, #FAF6EE, #FAF6EE 10px, #F3EFE6 10px, #F3EFE6 20px)',
                   borderStyle: 'dashed',
                 }}
               >
-                <S.Icon
-                  size={88}
-                  strokeWidth={3}
-                  color={isDone ? S.color : '#C8C0B5'}
-                  fill={isDone ? S.color : 'transparent'}
-                  fillOpacity={isDone ? 0.45 : 0}
-                />
+                {renderSlotIcon(def, filled)}
               </div>
             );
           })}
         </div>
 
-        {/* Pieces tray */}
         <div className="wood-card rounded-3xl p-5 sm:p-6">
-          <div className="text-sm font-bold uppercase tracking-wide text-[#8A817C] mb-4 text-center">
-            Pieces
-          </div>
+          <div className="text-sm font-bold uppercase tracking-wide text-[#8A817C] mb-4 text-center">Pieces</div>
           <div className="flex justify-center flex-wrap gap-5 sm:gap-7" data-testid="puzzle-pieces">
             {remainingPieces.length === 0 ? (
               <div className="text-lg font-bold text-[#9CBFA7]">All placed!</div>
             ) : (
               remainingPieces.map((pieceIdx) => {
-                const S = SHAPES[pieceIdx];
+                const def = defs[pieceIdx];
                 const isDragging = dragging?.pieceIdx === pieceIdx;
                 return (
                   <button
@@ -166,14 +216,14 @@ export default function Puzzle() {
                     className="wood-press rounded-3xl flex items-center justify-center cursor-grab"
                     style={{
                       width: 130, height: 130,
-                      background: S.color,
-                      border: `2px solid ${S.color}`,
-                      boxShadow: `0 8px 0 0 ${S.color}AA`,
+                      background: def.color,
+                      border: `2px solid ${def.color}`,
+                      boxShadow: `0 8px 0 0 ${def.color}AA`,
                       visibility: isDragging ? 'hidden' : 'visible',
                       touchAction: 'none',
                     }}
                   >
-                    <S.Icon size={70} strokeWidth={3} color="#FFF" fill="#FFF" fillOpacity={0.6} />
+                    {renderPiece(def)}
                   </button>
                 );
               })
@@ -181,29 +231,18 @@ export default function Puzzle() {
           </div>
         </div>
 
-        {/* Floating dragged piece */}
         {dragging && (
-          <div
-            className="fixed pointer-events-none z-50"
-            style={{
-              left: dragging.x - 65,
-              top: dragging.y - 65,
-              transform: 'rotate(-3deg)',
-            }}
-          >
+          <div className="fixed pointer-events-none z-50" style={{ left: dragging.x - 65, top: dragging.y - 65, transform: 'rotate(-3deg)' }}>
             <div
               className="rounded-3xl flex items-center justify-center"
               style={{
                 width: 130, height: 130,
-                background: SHAPES[dragging.pieceIdx].color,
-                border: `2px solid ${SHAPES[dragging.pieceIdx].color}`,
+                background: defs[dragging.pieceIdx].color,
+                border: `2px solid ${defs[dragging.pieceIdx].color}`,
                 boxShadow: '0 12px 24px rgba(90,82,77,0.3)',
               }}
             >
-              {(() => {
-                const S = SHAPES[dragging.pieceIdx];
-                return <S.Icon size={70} strokeWidth={3} color="#FFF" fill="#FFF" fillOpacity={0.6} />;
-              })()}
+              {renderPiece(defs[dragging.pieceIdx])}
             </div>
           </div>
         )}

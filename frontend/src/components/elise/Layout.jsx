@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Settings } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { BreakReminder } from "@/components/elise/BreakReminder";
 
 export const Layout = ({ children, title, showBack = true, hideGear = false }) => {
   const navigate = useNavigate();
@@ -37,6 +38,7 @@ export const Layout = ({ children, title, showBack = true, hideGear = false }) =
       </header>
 
       <main className="px-5 sm:px-10 pb-16 pt-6">{children}</main>
+      <BreakReminder />
     </div>
   );
 };

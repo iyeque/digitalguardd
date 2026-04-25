@@ -17,10 +17,15 @@ export default function Numbers() {
     const next = [...counted, i];
     setCounted(next);
     trackTap("numbers");
-    speak(String(next.length));
-    if (next.length === n) {
-      setTimeout(() => speak(`Great job! ${n}!`), 700);
-    }
+    const isLast = next.length === n;
+    speak(String(next.length), {
+      onend: () => {
+        if (isLast) {
+          // small breath, then celebrate — onend ensures the number was fully spoken first
+          setTimeout(() => speak(`Great job! ${n}!`), 350);
+        }
+      },
+    });
   };
 
   return (

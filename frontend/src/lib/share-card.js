@@ -19,11 +19,13 @@ const wrapText = (ctx, text, x, y, maxWidth, lineHeight) => {
   return yy;
 };
 
-export const buildShareCard = ({ activities, totalTaps, minutesPlayed, earnedCount, achievementCount }) => {
+export const buildShareCard = ({ childName, activities, totalTaps, minutesPlayed, earnedCount, achievementCount, mode }) => {
   const W = 1080, H = 1080;
   const c = document.createElement('canvas');
   c.width = W; c.height = H;
   const ctx = c.getContext('2d');
+  const isWeek = mode === 'week';
+  const name = childName || 'Elise';
 
   // background
   const bg = ctx.createLinearGradient(0, 0, W, H);
@@ -59,24 +61,24 @@ export const buildShareCard = ({ activities, totalTaps, minutesPlayed, earnedCou
   roundRect(ctx, cardX, cardY + cardH + 8, cardW, 22, 56, true, false);
 
   // header pill
-  ctx.fillStyle = '#9CBFA7';
-  roundRect(ctx, W / 2 - 200, cardY + 60, 400, 70, 35, true, false);
+  ctx.fillStyle = isWeek ? '#A1BCE3' : '#9CBFA7';
+  roundRect(ctx, W / 2 - 240, cardY + 60, 480, 70, 35, true, false);
   ctx.fillStyle = '#FFFFFF';
-  ctx.font = '700 32px "Nunito", system-ui, sans-serif';
+  ctx.font = '700 30px "Nunito", system-ui, sans-serif';
   ctx.textAlign = 'center';
-  ctx.fillText('ELISE LEARNS', W / 2, cardY + 105);
+  ctx.fillText(`${name.toUpperCase()} LEARNS · ${isWeek ? 'WEEK' : 'TODAY'}`, W / 2, cardY + 105);
 
   // title
   ctx.fillStyle = '#5A524D';
   ctx.font = '700 90px "Fredoka", system-ui, sans-serif';
   ctx.textAlign = 'center';
-  ctx.fillText("Today's magic", W / 2, cardY + 240);
-  ctx.fillText("with Elise", W / 2, cardY + 330);
+  ctx.fillText(isWeek ? "This week's" : "Today's magic", W / 2, cardY + 240);
+  ctx.fillText(`with ${name}`, W / 2, cardY + 330);
 
   // stat circles row
   const stats = [
     { val: String(totalTaps || 0), label: 'Total taps' },
-    { val: `${minutesPlayed || 1} min`, label: 'Time playing' },
+    { val: `${minutesPlayed || 1} min`, label: isWeek ? 'This week' : 'Today' },
     { val: `${earnedCount}/${achievementCount}`, label: 'Stickers' },
   ];
   const statsY = cardY + 440;

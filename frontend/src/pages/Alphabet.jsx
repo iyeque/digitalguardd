@@ -3,6 +3,8 @@ import { Layout } from "@/components/elise/Layout";
 import { ALPHABET } from "@/lib/data";
 import { speak } from "@/lib/speech";
 import { trackOpen, trackTap } from "@/lib/tracking";
+import { getSettings } from "@/lib/voice-settings";
+import { phoneticsFor } from "@/lib/phonics";
 import { ChevronLeft, ChevronRight, Volume2 } from "lucide-react";
 
 const PALETTES = ["wood-card-sage", "wood-card-mustard", "wood-card-coral", "wood-card-blue", "wood-card-pink"];
@@ -18,7 +20,13 @@ export default function Alphabet() {
   const sayLetter = () => {
     trackTap("alphabet");
     setBump(b => b + 1);
-    speak(`${current.letter} is for ${current.word}.`);
+    const settings = getSettings();
+    if (settings.phonicsMode) {
+      const sound = phoneticsFor(current.letter);
+      speak(`${sound}. ${current.letter} is for ${current.word}.`);
+    } else {
+      speak(`${current.letter} is for ${current.word}.`);
+    }
   };
 
   const next = () => { setIdx((i) => (i + 1) % ALPHABET.length); };

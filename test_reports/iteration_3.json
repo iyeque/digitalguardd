@@ -1,0 +1,32 @@
+{
+  "summary": "Iteration 3 backend + frontend tested end-to-end on the public preview URL. Backend: 6/6 pytest cases pass (health ok+tts true, voices=9 expected ids w/ available:true, /api/tts returns audio/mpeg >5KB, second identical POST returns X-Cache:HIT, invalid voice -> 400, empty text -> 422). Frontend: all required testids verified — /trace (canvas, prev/next/clear/done, progress goes 'A — 1 / 26' to 'B — 2 / 26'), /puzzle variant-numbers re-renders pieces with numeric text (e.g. '1','2','5'), /parent/settings exposes child-name-input (persists to localStorage 'elise_voice_settings_v1'), tts-engine-cloud/browser toggling flips useCloudTts, all 9 cloud-voice-<id> grid cells render, phonics-toggle alternates 'Turn on'/'Turn off', daily-limit-slider updates daily-limit-value to '20 min/day'. ParentDashboard shows weekly-highlight, exactly 7 week-bar-<date> bars, week-total-mins, stat-time-today, stat-stickers, share-mode-today/week, sticker-tracer; share-mode-week + download-moment-btn fires anchor.click() once (canvas built). /123 apple-0/1/2 taps and /abc phonics flashcard click both produce zero JS errors. Home greeting reads 'Hi Mia! Let's play.' when childName preset in localStorage. All 11 routes (/, /abc, /trace, /123, /colors, /shapes, /puzzle, /animals, /rhymes, /parent, /parent/settings) load with zero console errors. NOTE: home activity cards use ids 'alphabet' and 'numbers' (data-testid='activity-card-alphabet' / 'activity-card-numbers') — not 'abc'/'123' as worded in the test request; all 8 cards are present (alphabet, trace, numbers, colors, shapes, puzzle, animals, rhymes).",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_tts_iter3.py",
+    "/app/test_reports/pytest/iter3_results.xml"
+  ],
+  "action_items": [
+    "Optional: align test request naming with code — activity card data-testids are 'activity-card-alphabet' and 'activity-card-numbers' (driven by data.js id field), not 'activity-card-abc' / 'activity-card-123'. Either update lib/data.js ids or update review request wording for clarity."
+  ],
+  "critical_code_review_comments": [
+    "server.py /api/tts caches by sha1(voice|speed|text). Good. Bounded cache (256 entries) with simple FIFO eviction — fine for MVP.",
+    "TTS endpoint correctly differentiates ValueError -> 400 vs generic Exception -> 502. EMERGENT_LLM_KEY missing -> 503. Pydantic min_length=1 on text gives 422 for empty string (FastAPI validation).",
+    "Async lock around tts.generate_speech serialises requests; for higher concurrency consider per-key lock instead of global lock to avoid head-of-line blocking, but acceptable for current scale.",
+    "Frontend cloudSpeak should also handle 503 (TTS not configured) gracefully and fall back to browser TTS — verify in speech.js. Not directly tested here.",
+    "Home.jsx generates testid as activity-card-${a.id}; data.js uses id 'alphabet' and 'numbers'. The review request expected 'abc'/'123' which would be route-based. Recommend documenting this mapping or adding explicit testid props in data.js."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_tts_iter3.py (new)"
+  ],
+  "success_rate": {"backend": "100% (6/6)", "frontend": "100% on all assertable testids and flows"},
+  "test_credentials": "n/a (no auth)",
+  "seed_data_creation": "none",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Public URL: https://tiny-learners-60.preview.emergentagent.com. To test cloud-voice grid, wait ~2.5s on /parent/settings for /api/tts/voices. To test home greeting personalisation, set localStorage 'elise_voice_settings_v1' via page.add_init_script BEFORE goto. For React-controlled inputs (sliders), use nativeInputValueSetter pattern + dispatch input/change events. Puzzle pieces in 'numbers' variant render the numeric character as textContent. activity-card testids use the data.js id ('alphabet','numbers','trace','colors','shapes','puzzle','animals','rhymes')."
+}
