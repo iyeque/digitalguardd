@@ -80,10 +80,11 @@ export const RHYMES = [
 ];
 
 export const ACTIVITIES = [
-  { id: "alphabet",      title: "ABC",            subtitle: "Letters & sounds",   path: "/abc",      colorClass: "wood-card-sage",    icon: "Type" },
-  { id: "numbers",       title: "1 2 3",          subtitle: "Count with me",      path: "/123",      colorClass: "wood-card-mustard", icon: "Hash" },
-  { id: "colors",        title: "Colors",         subtitle: "Tap to learn",       path: "/colors",   colorClass: "wood-card-coral",   icon: "Palette" },
-  { id: "shapes-puzzle", title: "Shapes",         subtitle: "Match the shape",    path: "/shapes",   colorClass: "wood-card-blue",    icon: "Shapes" },
-  { id: "animals",       title: "Animals",        subtitle: "What do they say?",  path: "/animals",  colorClass: "wood-card-pink",    icon: "Rabbit" },
-  { id: "rhymes",        title: "Rhymes",         subtitle: "Sing along",         path: "/rhymes",   colorClass: "wood-card-sage",    icon: "Music" },
+  { id: "alphabet", title: "ABC",     subtitle: "Letters & sounds",   path: "/abc",     colorClass: "wood-card-sage",    icon: "Type" },
+  { id: "numbers",  title: "1 2 3",   subtitle: "Count with me",      path: "/123",     colorClass: "wood-card-mustard", icon: "Hash" },
+  { id: "colors",   title: "Colors",  subtitle: "Tap to learn",       path: "/colors",  colorClass: "wood-card-coral",   icon: "Palette" },
+  { id: "shapes",   title: "Shapes",  subtitle: "Match the shape",    path: "/shapes",  colorClass: "wood-card-blue",    icon: "Shapes" },
+  { id: "puzzle",   title: "Puzzles", subtitle: "Drag and drop",      path: "/puzzle",  colorClass: "wood-card-mustard", icon: "Puzzle" },
+  { id: "animals",  title: "Animals", subtitle: "What do they say?",  path: "/animals", colorClass: "wood-card-pink",    icon: "Rabbit" },
+  { id: "rhymes",   title: "Rhymes",  subtitle: "Sing along",         path: "/rhymes",  colorClass: "wood-card-sage",    icon: "Music" },
 ];

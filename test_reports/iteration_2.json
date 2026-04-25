@@ -1,0 +1,29 @@
+{
+  "summary": "Iteration 2 frontend testing completed end-to-end on the public preview URL. All 7 home cards render (including new 'activity-card-puzzle'). Puzzle drag-and-drop works via mouse events: all 3 slots can be filled and 'puzzle-done'/'puzzle-reset-btn' appear. Parent Dashboard exposes open-settings-btn, magic-moment-card with share/download buttons (download triggers anchor click via canvas.toBlob), 11 sticker cards with correct ids and 'X of 11' label, plus breakdown-puzzle card. ParentSettings exposes all required testids; clicking voice-gender-male toggles wood-card-blue and clears wood-card-coral on female; lang-es-ES gains wood-card-sage; bg-music-toggle text alternates between 'Turn on'/'Turn off'; localStorage key 'elise_voice_settings_v1' persists gender/lang/bgMusicEnabled across navigation. All 10 routes load. ONE CRITICAL BUG was found and FIXED in this iteration: /rhymes was throwing 'stopBgMusic is not defined' (and would have thrown for getSettings/startBgMusic/isBgMusicSupported on Play) because Rhymes.jsx referenced these symbols without importing them. Added the missing imports and re-verified — rhymes pick/play/stop now runs without console errors.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [
+      {"flow": "Rhymes page render & play/stop", "issue": "FIXED during testing. Rhymes.jsx used getSettings/startBgMusic/stopBgMusic/isBgMusicSupported without importing them, causing the component to crash on mount-effect (stopBgMusic in cleanup) and on Play. Added missing imports from '@/lib/voice-settings' and '@/lib/audio-bg'. Verified no console errors after fix.", "affected_selectors": ["[data-testid='play-rhyme-btn']","[data-testid='stop-rhyme-btn']"]}
+    ],
+    "design_issues": []
+  },
+  "test_report_links": [],
+  "action_items": [
+    "No remaining action items from this iteration. Iteration 1's wood-card-* CSS palette concern is no longer reproducible — those classes apply colors correctly (verified via screenshot of /rhymes selected pick rendering green wood-card-sage, and via class-toggle assertions in Settings)."
+  ],
+  "critical_code_review_comments": [
+    "Rhymes.jsx was missing imports for getSettings/startBgMusic/stopBgMusic/isBgMusicSupported — a lint/eslint-no-undef rule would have caught this pre-merge. Recommend enabling no-undef in ESLint config.",
+    "ParentSettings.jsx reads getSettings() during initial useState which is fine since it is sync localStorage; OK.",
+    "Puzzle.jsx attaches global mousemove/mouseup listeners only while dragging; cleanup is correct. touchmove uses {passive:false} which is appropriate for preventDefault behavior.",
+    "share-card.js downloadCanvas uses anchor element click — verified to fire (window.__dlClicked incremented twice = canvas built and anchor clicked). Works in headless.",
+    "voice-settings persistence verified via localStorage key 'elise_voice_settings_v1' — gender/lang/bgMusicEnabled persisted across full navigation. Rate slider input via direct el.value assignment did not persist in test (React's synthetic onChange requires nativeInputValueSetter), but other writes prove the persistence path works; not an app bug."
+  ],
+  "updated_files": ["/app/frontend/src/pages/Rhymes.jsx"],
+  "success_rate": {"backend": "n/a (skipped per request)", "frontend": "100% after the missing-imports fix in Rhymes.jsx (was ~90% before fix because /rhymes crashed)"},
+  "seed_data_creation": "none",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Public URL: https://tiny-learners-60.preview.emergentagent.com. Pure client-side SPA. To test drag-and-drop in /puzzle use page.mouse.move(piece_center)->down->move(slot_center, steps=8)->up; iterate piece indexes 0..5 against each slot until the matching piece disappears from tray. To test download-moment-btn, override HTMLAnchorElement.prototype.click to count invocations (canvas.toBlob is async so wait ~800ms after click). For React-controlled inputs (rate/pitch sliders), use nativeInputValueSetter pattern instead of el.value= to actually fire onChange. ESLint no-undef is currently NOT catching missing imports — flag if you see runtime ReferenceErrors.",
+  "rca of the issue": "RCA — /rhymes ReferenceError 'stopBgMusic is not defined': Rhymes.jsx (lines 19,30,41) called getSettings/startBgMusic/stopBgMusic/isBgMusicSupported but the import block (lines 1-6) only imported speak/stopSpeech/trackOpen/trackTap/RHYMES/Layout/lucide icons. Reproduction: open /rhymes in any browser; React renders, then the play handler / cleanup effect throws ReferenceError (visible in console as 'An error occurred in the <Rhymes> component' + 'stopBgMusic is not defined'). Mitigation applied: added `import { getSettings } from '@/lib/voice-settings'` and `import { startBgMusic, stopBgMusic, isBgMusicSupported } from '@/lib/audio-bg'` to Rhymes.jsx. Verified post-fix by clicking rhyme-pick-0 -> play-rhyme-btn -> stop-rhyme-btn with zero console errors."
+}

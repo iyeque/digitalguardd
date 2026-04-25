@@ -3,6 +3,8 @@ import { Layout } from "@/components/elise/Layout";
 import { RHYMES } from "@/lib/data";
 import { speak, stopSpeech } from "@/lib/speech";
 import { trackOpen, trackTap } from "@/lib/tracking";
+import { getSettings } from "@/lib/voice-settings";
+import { startBgMusic, stopBgMusic, isBgMusicSupported } from "@/lib/audio-bg";
 import { Play, Square as Stop, Music } from "lucide-react";
 
 export default function Rhymes() {
@@ -16,6 +18,7 @@ export default function Rhymes() {
 
   const stop = () => {
     stopSpeech();
+    stopBgMusic();
     lineTimers.current.forEach(clearTimeout);
     lineTimers.current = [];
     setPlaying(false);
@@ -26,6 +29,7 @@ export default function Rhymes() {
     stop();
     trackTap("rhymes");
     setPlaying(true);
+    if (getSettings().bgMusicEnabled && isBgMusicSupported()) startBgMusic();
     const rhyme = RHYMES[active];
     let cumulative = 0;
     rhyme.lines.forEach((line, i) => {
@@ -36,7 +40,7 @@ export default function Rhymes() {
       lineTimers.current.push(t);
       cumulative += Math.max(2200, line.length * 75);
     });
-    const endT = setTimeout(() => { setPlaying(false); setLineIdx(-1); }, cumulative + 800);
+    const endT = setTimeout(() => { setPlaying(false); setLineIdx(-1); stopBgMusic(); }, cumulative + 800);
     lineTimers.current.push(endT);
   };
 

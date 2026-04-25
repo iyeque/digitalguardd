@@ -7,7 +7,9 @@ import Colors from "@/pages/Colors";
 import Shapes from "@/pages/Shapes";
 import Animals from "@/pages/Animals";
 import Rhymes from "@/pages/Rhymes";
+import Puzzle from "@/pages/Puzzle";
 import ParentDashboard from "@/pages/ParentDashboard";
+import ParentSettings from "@/pages/ParentSettings";
 
 function App() {
   return (
@@ -21,7 +23,9 @@ function App() {
           <Route path="/shapes" element={<Shapes />} />
           <Route path="/animals" element={<Animals />} />
           <Route path="/rhymes" element={<Rhymes />} />
+          <Route path="/puzzle" element={<Puzzle />} />
           <Route path="/parent" element={<ParentDashboard />} />
+          <Route path="/parent/settings" element={<ParentSettings />} />
         </Routes>
       </BrowserRouter>
     </div>

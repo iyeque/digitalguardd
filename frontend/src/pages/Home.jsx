@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
 import { ACTIVITIES } from "@/lib/data";
 import { Layout } from "@/components/elise/Layout";
-import { Type, Hash, Palette, Shapes, Rabbit, Music, Sparkles } from "lucide-react";
+import { Type, Hash, Palette, Shapes, Rabbit, Music, Sparkles, Puzzle } from "lucide-react";
 import { speak } from "@/lib/speech";
 
-const ICONS = { Type, Hash, Palette, Shapes, Rabbit, Music };
+const ICONS = { Type, Hash, Palette, Shapes, Rabbit, Music, Puzzle };
 
 export default function Home() {
   return (
