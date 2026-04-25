@@ -7,57 +7,58 @@
 Elise Learns
 
 ## User Persona
-- **Primary user**: 2-year-old toddler ("Elise") - taps, drags, watches, listens
-- **Secondary user**: Parent supervising and occasionally checking progress / sharing moments
+- **Primary user**: 2-year-old toddler — taps, drags, traces, listens
+- **Secondary user**: Parent supervising and occasionally reviewing/sharing progress
 
 ## Design Direction
 - Soft pastel, Montessori-inspired "wooden block" aesthetic
 - Fonts: Fredoka (display) + Nunito (body)
 - Big tap targets (≥80px), chunky bottom shadows, rounded corners
-- Calm, non-overstimulating; no jarring gradients/sounds
-- Staggered spring entrance animations, gentle wiggle/pop interactions
+- Calm, non-overstimulating; staggered spring entrance animations
 
 ## Architecture
 - **Frontend**: React 19 SPA (CRACO + react-router-dom v7), TailwindCSS, shadcn UI, lucide-react
-- **Backend**: FastAPI (`/api` prefix on `:8001`) + MongoDB — currently unused; app runs entirely client-side
-- **Audio**: `window.speechSynthesis` for narration; Web Audio API for background lullaby
-- **State**: localStorage — `elise_learns_progress_v1` (progress) + `elise_voice_settings_v1` (voice prefs)
+- **Backend**: FastAPI (`/api` prefix on `:8001`) + MongoDB; emergentintegrations OpenAI TTS endpoint
+- **Audio**: OpenAI TTS via Emergent LLM Key (primary) → browser `speechSynthesis` (fallback)
+- **State**: localStorage — `elise_learns_progress_v1` (progress), `elise_voice_settings_v1` (voice/UI prefs), `elise_daily_v1` (session-time history), `elise_break_dismissed_v1` (today's reminder dismissal)
 
 ## Implemented (Feb 2026)
 
 ### Iteration 1 — MVP
-- **Home** (`/`) – greeting + bento grid of activity cards (sage/mustard/coral/blue/pink wooden blocks)
-- **ABC** (`/abc`) – flashcards A→Z with TTS, prev/next nav, color-cycling cards
-- **123** (`/123`) – number selector (1–10) + apple-counting taps with verbal feedback
-- **Colors** (`/colors`) – 6 color blocks; tap to hear name
-- **Shapes** (`/shapes`) – "Find the X" matching mini-game
-- **Animals** (`/animals`) – 8 animals with custom Montessori art for Lion/Elephant/Pig
-- **Rhymes** (`/rhymes`) – 4 nursery rhymes with line-by-line spoken playback
-- **Parent Dashboard** (`/parent`) – stats, per-activity breakdown, hidden via 1.5s long-press of gear
+- 6 core activities (ABC, 123, Colors, Shapes, Animals, Rhymes), Parent Dashboard with stats, hidden gear long-press
 
-### Iteration 2 — Audio + Engagement features (this release)
-- **Voice settings** (`/parent/settings`):
-  - Female / Male voice quick toggle (heuristic-based gender detection across system voices)
-  - Specific voice picker (lists all device voices filtered by language)
-  - Talking-speed slider (0.6×–1.2×) and pitch slider (0.8–1.4)
-  - Language toggle: English / Español / Français (changes TTS lang only)
-  - "Test voice" button + Reset to defaults
-  - Settings persist in localStorage and apply globally
-- **Background music for Rhymes**: gentle synthesized lullaby via Web Audio API (no external assets); toggled from Settings
-- **Drag-and-drop Puzzle** (`/puzzle`): 3-shape puzzle round; pointer/touch dragging; correct slots fill with shape color; "All done!" with reset to new round
-- **Achievements / Stickers**: 11 stickers tied to taps, activity counts, and "all-rounder" milestone; unearned stickers shown desaturated; live counter ("X of 11")
-- **Magic Moment share card**: 1080×1080 canvas-generated PNG with stats, activities, and pretty pastel design — share via Web Share API (with file) or download fallback
-- **Toddler-safe mode**: full-screen + landscape orientation lock button (where supported)
+### Iteration 2 — Audio + engagement
+- Voice settings page (gender toggle, voice picker, rate/pitch sliders, language, full-screen mode)
+- Drag-and-drop Puzzle (shapes)
+- Background lullaby for Rhymes (Web Audio API)
+- 11 milestone Stickers
+- Magic-Moment share card (canvas-generated PNG)
+
+### Iteration 3 — Cloud voices + 7 next-action features (this release)
+- **Numbers bug fix** — onend chaining so "Great job!" no longer cuts off the last number
+- **OpenAI TTS** — `/api/tts` endpoint via Emergent LLM Key with cache + fallback. 9 voices (nova, shimmer, coral, fable, alloy, sage, ash, echo, onyx). Hybrid client-side speech.js auto-falls back to browser TTS on failure.
+- **Phonics mode** — settings toggle. ABC speaks letter sounds (buh) instead of names (bee)
+- **Letter Tracing** (`/trace`) — finger/mouse tracing canvas with faint guide letter, prev/next/clear/done; new "Tracer" sticker
+- **More animals** — 14 total (added Horse, Frog, Bee, Owl, Monkey, Bear)
+- **Numbers-into-slots puzzle variant** — Puzzle page now toggles between Shapes and Numbers
+- **Custom child name** — Settings input. Home greeting & dashboard adapt; share card uses the name
+- **Daily session timer + break reminder** — slider 0–60 min/day; gentle toast appears when reached, dismissible until next day
+- **Weekly highlight reel** — 7-day bar chart on dashboard; Magic Moment card has Today/Week toggle that produces a Week share-card
+- **README.md** at repo root with setup & Vercel instructions
+- **Audio cache** — backend caches TTS bytes per (voice, speed, text); second identical request returns instantly with `X-Cache: HIT`
+
+### Test results
+- Backend: 6/6 pytest passing (health, voices list, audio bytes, cache hit, validation 400/422)
+- Frontend: 100% — all routes load, all testids present, child-name personalisation works, drag-drop puzzle and tracing canvas function
 
 ## Deferred Backlog
-- **P1**: True multi-language vocabulary (currently only TTS lang switches; on-screen words stay English)
-- **P2**: Pre-recorded sung nursery rhymes (currently TTS-spoken with Web-Audio melody bed)
-- **P2**: Cloud sync of progress + cross-device login (Emergent Auth)
-- **P3**: Custom child name / avatar (currently hard-coded to "Elise")
-- **P3**: Parent-set daily session timer / break reminders
-- **P3**: Add more puzzle variations (number-into-slot, animal-into-habitat)
+- **P0**: Cross-device sync via Emergent Google Auth (auth flow + `/api/sync` endpoints + conflict resolution). Playbook fetched but deferred for focused iteration.
+- **P1**: True multi-language vocabulary (apple → manzana → pomme on-screen)
+- **P1**: Pre-recorded sung nursery rhymes (vs. current TTS-spoken with Web-Audio bed)
+- **P2**: Toddler avatar selection
+- **P2**: More puzzle variants (animal-into-habitat)
+- **P3**: PWA / offline mode (cache audio MP3s)
 
-## Known caveats
-- TTS quality depends entirely on the device's installed voices. Headless/incognito browsers may have very limited voice options.
-- iOS Safari requires a user gesture before any first audio playback (handled by the user tapping a card).
-- Web Audio API for background music is initialized lazily on user interaction.
+## Operational notes
+- `EMERGENT_LLM_KEY` lives in `/app/backend/.env`. If the key budget is depleted, cloud TTS gracefully returns 503 and the frontend falls back to browser voices.
+- Backend cache is in-process (256 entries, FIFO). For multi-instance deploys, consider Redis.
