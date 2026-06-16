@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ACTIVITIES } from "@/lib/data";
+import { ACTIVITIES, AVATARS } from "@/lib/data";
 import { Layout } from "@/components/elise/Layout";
 import { Type, Hash, Palette, Shapes, Rabbit, Music, Sparkles, Puzzle, PenLine, BookOpen } from "lucide-react";
 import { speak } from "@/lib/speech";
@@ -8,6 +8,9 @@ import { getSettings } from "@/lib/voice-settings";
 const ICONS = { Type, Hash, Palette, Shapes, Rabbit, Music, Puzzle, PenLine, BookOpen };
 
 export default function Home() {
+  const settings = getSettings();
+  const avatar = AVATARS.find(a => a.id === settings.avatar) || AVATARS[0];
+
   return (
     <Layout showBack={false}>
       <section className="max-w-6xl mx-auto">
@@ -15,15 +18,20 @@ export default function Home() {
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border-2 border-[#EAE3D9] mb-5">
             <Sparkles size={18} strokeWidth={3} color="#9CBFA7" />
             <span className="text-sm sm:text-base font-bold text-[#8A817C] tracking-wide">
-              {(getSettings().childName || "ELISE").toUpperCase()} LEARNS · for tiny hands
+              {(settings.childName || "ELISE").toUpperCase()} LEARNS · for tiny hands
             </span>
           </div>
+          
+          <div className="mb-4 text-7xl animate-float inline-block">
+            {avatar.emoji}
+          </div>
+
           <h1
             className="font-display font-bold text-5xl sm:text-7xl"
             style={{ color: "#5A524D" }}
             data-testid="home-title"
           >
-            Hi {getSettings().childName || "friend"}! <span className="inline-block animate-float">Let's play.</span>
+            Hi {settings.childName || "friend"}! <span className="inline-block">Let's play.</span>
           </h1>
           <p className="mt-4 text-lg sm:text-xl text-[#8A817C] font-medium max-w-xl mx-auto">
             Tap a wooden block to start a tiny adventure.

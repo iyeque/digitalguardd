@@ -23,21 +23,51 @@ export const COLORS = [
 
 export const SHAPES = ["Circle", "Square", "Triangle", "Star", "Heart", "Hexagon"];
 
+export const AVATARS = [
+  { id: "rabbit", emoji: "🐰", label: "Rabbit" },
+  { id: "panda",  emoji: "🐼", label: "Panda" },
+  { id: "cat",    emoji: "🐱", label: "Cat" },
+  { id: "dog",    emoji: "🐶", label: "Dog" },
+  { id: "lion",   emoji: "🦁", label: "Lion" },
+  { id: "fox",    emoji: "🦊", label: "Fox" },
+  { id: "monkey", emoji: "🐵", label: "Monkey" },
+  { id: "bear",   emoji: "🐻", label: "Bear" },
+];
+
+export const AI_MODELS = {
+  "en-US": { name: "English (Amy)" },
+  "es-ES": { name: "Español (Sharvard)" },
+  "fr-FR": { name: "Français (Siwis)" },
+  "sw-KE": { name: "Kiswahili (Lanier)" },
+  "ar-SA": { name: "العربية (Kareem)" },
+  "de-DE": { name: "Deutsch (Thorsten)" }
+};
+
 export const ANIMALS = [
-  { name: "Lion",     sound: "Roar",      emoji: "Roar!",       image: "https://static.prod-images.emergentagent.com/jobs/4631f13f-6176-4f1a-9a11-cb34afa695b5/images/0e5359b9824203f784b90aa650415a974ebd906b6d220a79147f00194e0a05f9.png" },
-  { name: "Elephant", sound: "Trumpet",   emoji: "Pawooo!",     image: "https://static.prod-images.emergentagent.com/jobs/4631f13f-6176-4f1a-9a11-cb34afa695b5/images/6f4d789fc63387ba798aff9b7456829be84201e4c8211bdc09af56aa663cba49.png" },
-  { name: "Pig",      sound: "Oink",      emoji: "Oink oink!",  image: "https://static.prod-images.emergentagent.com/jobs/4631f13f-6176-4f1a-9a11-cb34afa695b5/images/bb6cb955ed4a6625a07cb8a16d593e36df8fc6d2eb5a460238e1c0e8b00b1a8e.png" },
-  { name: "Cow",      sound: "Moo",       emoji: "Moo!",        image: null },
-  { name: "Duck",     sound: "Quack",     emoji: "Quack!",      image: null },
-  { name: "Sheep",    sound: "Baa",       emoji: "Baaa!",       image: null },
-  { name: "Cat",      sound: "Meow",      emoji: "Meow!",       image: null },
-  { name: "Dog",      sound: "Woof",      emoji: "Woof!",       image: null },
-  { name: "Horse",    sound: "Neigh",     emoji: "Neigh!",      image: null },
-  { name: "Frog",     sound: "Ribbit",    emoji: "Ribbit!",     image: null },
-  { name: "Bee",      sound: "Buzz",      emoji: "Bzzz!",       image: null },
-  { name: "Owl",      sound: "Hoot",      emoji: "Hoo hoo!",    image: null },
-  { name: "Monkey",   sound: "Ooh ooh",   emoji: "Ooh ooh aah!",image: null },
-  { name: "Bear",     sound: "Growl",     emoji: "Grrr!",       image: null },
+  { name: "Lion",     sound: "Roar",            emoji: "🦁" },
+  { name: "Tiger",    sound: "Grrr",            emoji: "🐯" },
+  { name: "Elephant", sound: "Trumpet",         emoji: "🐘" },
+  { name: "Pig",      sound: "Oink",            emoji: "🐷" },
+  { name: "Cow",      sound: "Moo",             emoji: "🐮" },
+  { name: "Duck",     sound: "Quack",           emoji: "🦆" },
+  { name: "Sheep",    sound: "Baa",             emoji: "🐑" },
+  { name: "Cat",      sound: "Meow",            emoji: "🐱" },
+  { name: "Dog",      sound: "Woof",            emoji: "🐶" },
+  { name: "Horse",    sound: "Neigh",           emoji: "🐴" },
+  { name: "Chicken",  sound: "Cluck",           emoji: "🐔" },
+  { name: "Rooster",  sound: "Cock-a-doodle-doo", emoji: "🐓" },
+  { name: "Frog",     sound: "Ribbit",          emoji: "🐸" },
+  { name: "Bee",      sound: "Bzzz",            emoji: "🐝" },
+  { name: "Owl",      sound: "Hoo hoo",         emoji: "🦉" },
+  { name: "Monkey",   sound: "Ooh ooh aah aah", emoji: "🐵" },
+  { name: "Bear",     sound: "Growl",           emoji: "🐻" },
+  { name: "Mouse",    sound: "Squeak",          emoji: "🐭" },
+  { name: "Snake",    sound: "Hiss",            emoji: "🐍" },
+  { name: "Bird",     sound: "Chirp",           emoji: "🐦" },
+  { name: "Penguin",  sound: "Honk",            emoji: "🐧" },
+  { name: "Kangaroo", sound: "Boing",           emoji: "🦘" },
+  { name: "Whale",    sound: "Splash",          emoji: "🐳" },
+  { name: "Dolphin",  sound: "Click click",      emoji: "🐬" },
 ];
 
 export const RHYMES = [

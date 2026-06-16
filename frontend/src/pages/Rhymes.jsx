@@ -7,12 +7,13 @@ import { getSettings } from "@/lib/voice-settings";
 import { startBgMusic, stopBgMusic, isBgMusicSupported } from "@/lib/audio-bg";
 import { Play, Square as Stop, Music, Mic, Speaker } from "lucide-react";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || `${window.location.protocol}//${window.location.hostname}:8001`;
 const API = `${BACKEND_URL}/api`;
 
 // Map our local rhymes to the backend's audio slugs (when available).
 const SUNG_SLUG = {
   "Twinkle Twinkle Little Star": "twinkle",
+  "The Itsy Bitsy Spider": "itsybitsy",
   "Old MacDonald Had a Farm": "macdonald",
   "Baa Baa Black Sheep": "baabaa",
 };
@@ -53,21 +54,30 @@ export default function Rhymes() {
     trackTap("rhymes");
     setPlaying(true);
 
-    const audio = new Audio(`${API}/audio/rhyme/${slug}`);
+    // Route through proxy to ensure CORS compliance
+    const proxyUrl = `${API}/proxy?url=${encodeURIComponent(RHYMES_DATA[slug].url)}`;
+    const audio = new Audio(proxyUrl);
     audioRef.current = audio;
-    audio.volume = 1;
 
-    // Distribute lyric highlights evenly across the audio's duration
     audio.onloadedmetadata = () => {
       const dur = audio.duration && isFinite(audio.duration) ? audio.duration : rhyme.lines.length * 3;
-      const each = (dur * 1000) / rhyme.lines.length;
+      // Using a slightly more generous timing approach
       rhyme.lines.forEach((_, i) => {
-        lineTimers.current.push(setTimeout(() => setLineIdx(i), Math.round(each * i)));
+        const time = (dur * (i / rhyme.lines.length)) * 1000;
+        lineTimers.current.push(setTimeout(() => setLineIdx(i), time));
       });
     };
     audio.onended = () => { setPlaying(false); setLineIdx(-1); };
-    audio.onerror = () => { stop(); setMode("spoken"); playSpoken(); };
-    audio.play().catch(() => { stop(); setMode("spoken"); playSpoken(); });
+    audio.onerror = (e) => { console.error("Audio error", e); stop(); };
+    audio.play().catch(console.error);
+  };
+
+  // Need a map for slugs
+  const RHYMES_DATA = {
+    "twinkle": { url: "https://archive.org/download/78_twinkle-twinkle-little-star_gbia0533998b/TWINKLE%20TWINKLE%20LITTLE%20STAR.mp3" },
+    "macdonald": { url: "https://archive.org/download/78_old-macdonald-had-a-farm_gbia0431356a/OLD%20MACDONALD%20HAD%20A%20FARM.mp3" },
+    "baabaa": { url: "https://archive.org/download/78_3-baa-baa-black-sheep_gbia0210109c/3.%20BAA%20BAA%20BLACK%20SHEEP.mp3" },
+    "itsybitsy": { url: "https://archive.org/download/wheels-on-the-bus-nursery-rhymes-pbs-kids/Itsy%20Bitsy%20Spider.mp3" },
   };
 
   const playSpoken = () => {

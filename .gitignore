@@ -72,9 +72,12 @@ agenthub/agents/youtube/db
 *.pack
 *.deb
 *.dylib
+*.onnx
+*.onnx.json
 
 # Build caches
 .cache/
+certs/
 
 memory/test_credentials.md
 

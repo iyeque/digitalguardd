@@ -2,7 +2,7 @@
 // Generation-tracked to prevent overlapping/echo when many calls fire fast.
 import { getSettings } from "@/lib/voice-settings";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || `${window.location.protocol}//${window.location.hostname}:8001`;
 const API = `${BACKEND_URL}/api`;
 
 const audioCache = new Map();   // key -> blob URL

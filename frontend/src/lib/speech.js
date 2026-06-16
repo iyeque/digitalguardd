@@ -20,22 +20,31 @@ warmCloud();
 const pickVoice = (settings) => {
   const voices = ensureVoices();
   if (!voices.length) return null;
+  
   if (settings.voiceURI) {
     const v = voices.find(x => x.voiceURI === settings.voiceURI);
     if (v) return v;
   }
+  
   const langPrefix = (settings.lang || 'en').split('-')[0];
   const sameLang = voices.filter(v => v.lang && v.lang.toLowerCase().startsWith(langPrefix));
   const pool = sameLang.length ? sameLang : voices;
+  
+  // Prioritize "Premium", "Neural", "Natural" or Online voices
+  const isPremium = (v) => /premium|enhanced|natural|neural|online|google.*natural/i.test(v.name);
+  
   if (settings.gender && settings.gender !== 'auto') {
-    const matches = pool.filter(v => inferGender(v) === settings.gender);
-    if (matches.length) {
-      const premium = matches.find(v => /premium|enhanced|natural|google/i.test(v.name));
-      return premium || matches[0];
+    const genderMatches = pool.filter(v => inferGender(v) === settings.gender);
+    if (genderMatches.length) {
+      const premium = genderMatches.find(isPremium);
+      return premium || genderMatches[0];
     }
   }
-  const friendly = pool.find(v => /samantha|google.*english|karen|moira|daniel|alex/i.test(v.name));
-  return friendly || pool[0];
+  
+  const premium = pool.find(isPremium);
+  const friendly = pool.find(v => /samantha|karen|moira|daniel|alex/i.test(v.name));
+  
+  return premium || friendly || pool[0];
 };
 
 const browserSpeak = (text, opts) => {
@@ -65,20 +74,22 @@ export const stopSpeech = () => {
 export const speak = async (text, opts = {}) => {
   stopSpeech();
   const settings = getSettings();
-
-  // 1. Custom voice clip wins if available
+  
+  // 1. Custom voice clip wins if available for ACTIVE PROFILE
   try {
-    const played = await tryPlayCustom(text, opts);
+    const profileId = settings.activeProfile || 'Mom';
+    const scopedKey = `user:${profileId.toLowerCase()}:${text.toLowerCase()}`;
+    const played = await tryPlayCustom(scopedKey, opts);
     if (played) return;
   } catch (_) {}
 
-  // 2. Cloud TTS
+  // 2. Cloud TTS (Piper Backend)
   if (settings.useCloudTts) {
     cloudSpeak(text, opts).catch(() => browserSpeak(text, opts));
     return;
   }
 
-  // 3. Browser TTS fallback
+  // 3. Optimized Browser TTS fallback
   browserSpeak(text, opts);
 };
 

@@ -14,10 +14,19 @@ export const DEFAULTS = {
   cloudVoice: 'nova',    // alloy|ash|coral|echo|fable|nova|onyx|sage|shimmer
   // Personalisation
   childName: 'Elise',
+  avatar: 'rabbit',
   // Phonics
   phonicsMode: false,    // when true, ABC speaks letter sounds (buh) not names (bee)
   // Daily session timer (minutes); 0 = unlimited
   dailyLimitMins: 0,
+  // Cloud Sync
+  syncId: null,          // Unique ID for cross-device sync
+  // Local AI (Piper/Sherpa)
+  localAiEnabled: false, 
+  localAiModelLoaded: false,
+  downloadedModels: [],  // list of lang codes e.g. ['en-US', 'es-ES']
+  // Caregiver Profiles
+  activeProfile: 'Mom',  // 'Mom' | 'Dad' | 'Grandma' | 'Grandpa'
 };
 
 const read = () => {

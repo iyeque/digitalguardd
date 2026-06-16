@@ -43,6 +43,11 @@ export const saveClip = async (phrase, blob, label = "") => {
   });
 };
 
+// Story specific recordings use key "story:{profileId}:{storyId}:{idx}"
+export const saveStoryClip = async (profileId, storyId, lineIdx, blob) => {
+  return saveClip(`story:${profileId}:${storyId}:${lineIdx}`, blob, `Story ${storyId} Line ${lineIdx} (${profileId})`);
+};
+
 export const getClipBlob = async (phrase) => {
   try {
     const store = await tx("readonly");
@@ -52,6 +57,10 @@ export const getClipBlob = async (phrase) => {
       req.onerror = () => resolve(null);
     });
   } catch (_) { return null; }
+};
+
+export const getStoryClipBlob = async (profileId, storyId, lineIdx) => {
+  return getClipBlob(`story:${profileId}:${storyId}:${lineIdx}`);
 };
 
 export const listClips = async () => {
@@ -82,6 +91,16 @@ let currentCustom = null;
 export const tryPlayCustom = async (text, opts = {}) => {
   const blob = await getClipBlob(text);
   if (!blob) return false;
+  return playBlob(blob, opts);
+};
+
+export const tryPlayStoryClip = async (profileId, storyId, lineIdx, opts = {}) => {
+  const blob = await getStoryClipBlob(profileId, storyId, lineIdx);
+  if (!blob) return false;
+  return playBlob(blob, opts);
+};
+
+const playBlob = async (blob, opts = {}) => {
   if (currentCustom) { try { currentCustom.pause(); } catch (_) {} }
   return await new Promise((resolve) => {
     const url = URL.createObjectURL(blob);

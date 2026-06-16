@@ -4,10 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { getSettings, updateSettings, listVoices, DEFAULTS } from "@/lib/voice-settings";
 import { sayTest } from "@/lib/speech";
-import { Volume2, User, UserRound, Maximize2, Cloud, Monitor } from "lucide-react";
+import { AVATARS, AI_MODELS } from "@/lib/data";
+import { pushProgress, pushClips, pullAll } from "@/lib/sync";
+import { Volume2, User, UserRound, Maximize2, Cloud, Monitor, CloudUpload, CloudDownload, Cpu, DownloadCloud, Sparkles, Heart } from "lucide-react";
 import VoiceLibrary from "@/components/elise/VoiceLibrary";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || `${window.location.protocol}//${window.location.hostname}:8001`;
 const API = `${BACKEND_URL}/api`;
 
 export default function ParentSettings() {
@@ -15,6 +17,8 @@ export default function ParentSettings() {
   const [browserVoices, setBrowserVoices] = useState([]);
   const [cloudVoices, setCloudVoices] = useState([]);
   const [cloudAvailable, setCloudAvailable] = useState(false);
+  const [syncing, setSyncing] = useState(false);
+  const [downloadProgress, setDownloadProgress] = useState(null);
 
   useEffect(() => {
     const refresh = () => setBrowserVoices(listVoices());
@@ -37,9 +41,40 @@ export default function ParentSettings() {
 
   const apply = (patch) => { setSettings(updateSettings(patch)); };
 
+  const handlePush = async () => {
+    setSyncing(true);
+    await pushProgress();
+    await pushClips();
+    setSyncing(false);
+    alert("Data pushed to cloud!");
+  };
+
+  const handlePull = async () => {
+    setSyncing(true);
+    await pullAll();
+    setSettings(getSettings());
+    setSyncing(false);
+    alert("Data pulled from cloud!");
+  };
+
+  const handleDownloadModel = async () => {
+    const lang = settings.lang || "en-US";
+    setDownloadProgress(1);
+    try {
+      // Piper models are now handled by backend, this is legacy/placeholder
+      setDownloadProgress(null);
+      apply({ localAiEnabled: true });
+    } catch (e) {
+      alert("Download failed: " + e.message);
+      setDownloadProgress(null);
+    }
+  };
+
   const filteredBrowserVoices = browserVoices.filter(v =>
     !settings.lang || v.lang.toLowerCase().startsWith(settings.lang.split('-')[0].toLowerCase())
   );
+
+  const currentModelDownloaded = settings.downloadedModels?.includes(settings.lang || 'en-US');
 
   const requestFullscreen = () => {
     const el = document.documentElement;
@@ -55,12 +90,81 @@ export default function ParentSettings() {
         {/* Child Name */}
         <Panel title="Child's name" subtitle="We'll greet them on the home screen.">
           <Input
+            id="child-name"
+            name="childName"
             value={settings.childName || ''}
             onChange={(e) => apply({ childName: e.target.value.slice(0, 24) })}
             placeholder="Elise"
             data-testid="child-name-input"
             className="rounded-2xl border-2 border-[#EAE3D9] py-6 text-lg font-semibold text-[#5A524D]"
           />
+        </Panel>
+
+        {/* Caregiver Profile */}
+        <Panel title="Active Caregiver" subtitle="Switch whose voice recordings the child hears.">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3" data-testid="caregiver-grid">
+            {['Mom', 'Dad', 'Grandma', 'Grandpa'].map(profile => (
+              <button
+                key={profile}
+                onClick={() => apply({ activeProfile: profile })}
+                className={`wood-press rounded-2xl py-4 flex flex-col items-center justify-center transition ${settings.activeProfile === profile ? 'wood-card-coral text-white' : 'wood-card text-[#5A524D]'}`}
+              >
+                <Heart size={24} className={`mb-1 ${settings.activeProfile === profile ? 'fill-white' : 'text-[#E89D8A]'}`} />
+                <span className="font-bold text-sm">{profile}</span>
+              </button>
+            ))}
+          </div>
+        </Panel>
+
+        {/* Avatar Selection */}
+        <Panel title="Toddler Avatar" subtitle="Choose a friendly face for your child.">
+          <div className="grid grid-cols-4 gap-3" data-testid="avatar-grid">
+            {AVATARS.map(a => (
+              <button
+                key={a.id}
+                onClick={() => apply({ avatar: a.id })}
+                data-testid={`avatar-${a.id}`}
+                className={`wood-press rounded-2xl py-3 flex flex-col items-center justify-center transition ${settings.avatar === a.id ? 'wood-card-sage text-white' : 'wood-card text-[#5A524D]'}`}
+              >
+                <span className="text-3xl mb-1">{a.emoji}</span>
+                <span className="text-[10px] font-bold uppercase tracking-widest">{a.label}</span>
+              </button>
+            ))}
+          </div>
+        </Panel>
+
+        {/* Cloud Sync */}
+        <Panel title="Cloud Sync" subtitle="Enter a secret code to sync your recordings across devices.">
+          <div className="space-y-4">
+            <Input
+              id="sync-id"
+              name="syncId"
+              value={settings.syncId || ''}
+              onChange={(e) => apply({ syncId: e.target.value.trim() })}
+              placeholder="Enter a secret code (e.g. MyFamily2026)"
+              className="rounded-2xl border-2 border-[#EAE3D9] py-6 text-lg font-semibold text-[#5A524D]"
+            />
+            {settings.syncId && (
+              <div className="grid grid-cols-2 gap-3 mt-4">
+                <button
+                  onClick={handlePush}
+                  disabled={syncing}
+                  className="wood-press wood-card-blue rounded-2xl py-4 flex flex-col items-center justify-center text-white"
+                >
+                  <CloudUpload size={24} className="mb-1" />
+                  <span className="font-bold text-sm">Push to Cloud</span>
+                </button>
+                <button
+                  onClick={handlePull}
+                  disabled={syncing}
+                  className="wood-press wood-card-sage rounded-2xl py-4 flex flex-col items-center justify-center text-white"
+                >
+                  <CloudDownload size={24} className="mb-1" />
+                  <span className="font-bold text-sm">Pull from Cloud</span>
+                </button>
+              </div>
+            )}
+          </div>
         </Panel>
 
         {/* TTS engine */}
@@ -138,9 +242,9 @@ export default function ParentSettings() {
                 className="w-full rounded-2xl border-2 border-[#EAE3D9] bg-white px-4 py-3 font-semibold text-[#5A524D] text-base"
               >
                 <option value="">Auto (best match)</option>
-                {filteredBrowserVoices.map(v => (
-                  <option key={v.voiceURI} value={v.voiceURI}>
-                    {v.name} ({v.gender}) — {v.lang}
+                {filteredBrowserVoices.map((v, index) => (
+                  <option key={`${v.voiceURI}-${index}`} value={v.voiceURI}>
+                    {`${v.name} (${v.gender}) — ${v.lang}`}
                   </option>
                 ))}
               </select>
@@ -196,6 +300,9 @@ export default function ParentSettings() {
               { code: 'en-US', label: 'English' },
               { code: 'es-ES', label: 'Español' },
               { code: 'fr-FR', label: 'Français' },
+              { code: 'sw-KE', label: 'Kiswahili' },
+              { code: 'ar-SA', label: 'العربية' },
+              { code: 'de-DE', label: 'Deutsch' },
             ].map(l => (
               <button
                 key={l.code}
@@ -254,7 +361,7 @@ export default function ParentSettings() {
 
         {/* Custom voice library */}
         <Panel title="Your own voice clips" subtitle="Record or upload phrases — they'll play automatically when the app says them.">
-          <VoiceLibrary childName={settings.childName} />
+          <VoiceLibrary childName={settings.childName} activeProfile={settings.activeProfile} />
         </Panel>
 
         <div className="flex justify-center gap-3 pt-2 flex-wrap">

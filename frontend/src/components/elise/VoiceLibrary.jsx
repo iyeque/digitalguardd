@@ -11,7 +11,7 @@ const PRESETS = [
   "I love you.",
 ];
 
-export default function VoiceLibrary({ childName }) {
+export default function VoiceLibrary({ childName, activeProfile }) {
   const [clips, setClips] = useState([]);
   const [recordingPhrase, setRecordingPhrase] = useState(null);
   const [customPhrase, setCustomPhrase] = useState("");
@@ -22,6 +22,9 @@ export default function VoiceLibrary({ childName }) {
   useEffect(() => { refresh(); }, []);
 
   const expand = (phrase) => phrase.replaceAll("{name}", childName || "Elise");
+  
+  // Scoped key for caregiver profile
+  const getScopedKey = (phrase) => `user:${activeProfile.toLowerCase()}:${expand(phrase).toLowerCase()}`;
 
   const startRec = async (phrase) => {
     try {
@@ -30,8 +33,8 @@ export default function VoiceLibrary({ childName }) {
       chunksRef.current = [];
       mr.ondataavailable = (e) => { if (e.data.size > 0) chunksRef.current.push(e.data); };
       mr.onstop = async () => {
-        const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
-        await saveClip(expand(phrase), blob, expand(phrase));
+        const blob = new Blob(chunksRef.current, { type: 'audio/ogg; codecs=opus' });
+        await saveClip(getScopedKey(phrase), blob, `${expand(phrase)} (${activeProfile})`);
         stream.getTracks().forEach(t => t.stop());
         setRecordingPhrase(null);
         refresh();
@@ -50,31 +53,35 @@ export default function VoiceLibrary({ childName }) {
 
   const onUpload = async (phrase, file) => {
     if (!file) return;
-    await saveClip(expand(phrase), file, expand(phrase));
+    await saveClip(getScopedKey(phrase), file, `${expand(phrase)} (${activeProfile})`);
     refresh();
   };
 
   const onDelete = async (phrase) => {
-    await deleteClip(phrase);
+    await deleteClip(getScopedKey(phrase));
     refresh();
   };
 
   const playClip = async (phrase) => {
     const { getClipBlob } = await import("@/lib/voice-clips");
-    const blob = await getClipBlob(phrase);
+    const blob = await getClipBlob(getScopedKey(phrase));
     if (!blob) return;
     const a = new Audio(URL.createObjectURL(blob));
     a.play();
   };
 
-  const isRecorded = (phrase) => clips.some(c => c.phrase === expand(phrase).toLowerCase());
+  const isRecorded = (phrase) => clips.some(c => c.phrase === getScopedKey(phrase).toLowerCase());
 
   return (
     <div className="space-y-3" data-testid="voice-library">
-      <p className="text-sm text-[#8A817C] font-semibold">
-        Record short phrases in your own voice. They'll play automatically when the app says them.
-        Phrase matching is exact — say it the same way each time.
-      </p>
+      <div className="bg-[#FFF9F5] rounded-2xl p-4 border-2 border-[#E89D8A] mb-4">
+        <p className="text-sm text-[#5A524D] font-bold">
+          Currently recording for: <span className="text-[#E89D8A] uppercase">{activeProfile}</span>
+        </p>
+        <p className="text-xs text-[#8A817C] mt-1">
+          Record phrases in your own voice. The child will hear the version from the active caregiver.
+        </p>
+      </div>
 
       {PRESETS.map((preset) => {
         const expanded = expand(preset);
@@ -87,17 +94,15 @@ export default function VoiceLibrary({ childName }) {
           >
             <div className="flex-1 min-w-0">
               <div className="font-bold text-[#5A524D] text-sm sm:text-base truncate">"{expanded}"</div>
-              {recorded && <div className="text-xs text-[#9CBFA7] font-bold">Custom recording active</div>}
+              {recorded && <div className="text-xs text-[#9CBFA7] font-bold">✓ Recorded by {activeProfile}</div>}
             </div>
             <div className="flex gap-2 shrink-0">
               {recorded && (
                 <>
-                  <button onClick={() => playClip(expanded)} className="wood-card wood-press p-2 rounded-xl" title="Play"
-                    data-testid={`voice-play-${preset.replaceAll(/\W/g, "_")}`}>
+                  <button onClick={() => playClip(preset)} className="wood-card wood-press p-2 rounded-xl" title="Play">
                     <Play size={16} strokeWidth={3} color="#9CBFA7" />
                   </button>
-                  <button onClick={() => onDelete(expanded)} className="wood-card wood-press p-2 rounded-xl" title="Delete"
-                    data-testid={`voice-delete-${preset.replaceAll(/\W/g, "_")}`}>
+                  <button onClick={() => onDelete(preset)} className="wood-card wood-press p-2 rounded-xl" title="Delete">
                     <Trash2 size={16} strokeWidth={3} color="#E89D8A" />
                   </button>
                 </>
@@ -109,17 +114,14 @@ export default function VoiceLibrary({ childName }) {
                   accept="audio/*"
                   className="hidden"
                   onChange={(e) => onUpload(preset, e.target.files?.[0])}
-                  data-testid={`voice-upload-${preset.replaceAll(/\W/g, "_")}`}
                 />
               </label>
               {!isActive ? (
-                <button onClick={() => startRec(preset)} className="wood-card-coral wood-press p-2 rounded-xl" title="Record"
-                  data-testid={`voice-record-${preset.replaceAll(/\W/g, "_")}`}>
+                <button onClick={() => startRec(preset)} className="wood-card-coral wood-press p-2 rounded-xl" title="Record">
                   <Mic size={16} strokeWidth={3} color="#fff" />
                 </button>
               ) : (
-                <button onClick={stopRec} className="wood-card-blue wood-press p-2 rounded-xl animate-pop" title="Stop"
-                  data-testid={`voice-stop-${preset.replaceAll(/\W/g, "_")}`}>
+                <button onClick={stopRec} className="wood-card-blue wood-press p-2 rounded-xl animate-pop" title="Stop">
                   <Square size={16} strokeWidth={3} color="#fff" fill="#fff" />
                 </button>
               )}
@@ -129,26 +131,45 @@ export default function VoiceLibrary({ childName }) {
       })}
 
       {/* Custom phrase */}
-      <div className="rounded-2xl border-2 border-dashed border-[#EAE3D9] p-3 mt-2">
-        <div className="text-sm font-bold text-[#5A524D] mb-2">Add your own phrase</div>
-        <div className="flex gap-2">
+      <div className="rounded-2xl border-2 border-dashed border-[#EAE3D9] p-4 mt-2 bg-[#FDFBF7]">
+        <div className="text-sm font-bold text-[#5A524D] mb-2">Add a custom phrase</div>
+        <div className="flex flex-col gap-3">
           <input
             value={customPhrase}
             onChange={(e) => setCustomPhrase(e.target.value)}
-            placeholder='e.g. "Bedtime sweetheart"'
-            data-testid="voice-custom-phrase-input"
-            className="flex-1 rounded-xl border-2 border-[#EAE3D9] bg-white px-3 py-2 text-sm text-[#5A524D]"
+            placeholder='e.g. "Time for a snack!"'
+            className="w-full rounded-xl border-2 border-[#EAE3D9] bg-white px-4 py-3 text-sm font-semibold text-[#5A524D]"
           />
-          <label className="wood-card-mustard wood-press p-2 px-3 rounded-xl cursor-pointer flex items-center gap-2" title="Upload">
-            <Upload size={16} strokeWidth={3} color="#5A524D" />
-            <span className="text-sm font-bold text-[#5A524D]">Upload</span>
-            <input
-              type="file" accept="audio/*" className="hidden"
-              disabled={!customPhrase.trim()}
-              onChange={(e) => { if (customPhrase.trim()) onUpload(customPhrase, e.target.files?.[0]); }}
-              data-testid="voice-custom-upload"
-            />
-          </label>
+          <div className="flex gap-2">
+             <label className="flex-1 wood-card wood-press py-3 rounded-xl cursor-pointer flex items-center justify-center gap-2">
+              <Upload size={18} strokeWidth={3} color="#A1BCE3" />
+              <span className="text-sm font-bold text-[#5A524D]">Upload</span>
+              <input
+                type="file" accept="audio/*" className="hidden"
+                disabled={!customPhrase.trim()}
+                onChange={(e) => { if (customPhrase.trim()) onUpload(customPhrase, e.target.files?.[0]); }}
+              />
+            </label>
+            
+            {!recordingPhrase ? (
+              <button 
+                onClick={() => startRec(customPhrase)}
+                disabled={!customPhrase.trim()}
+                className="flex-1 wood-card-coral wood-press py-3 rounded-xl flex items-center justify-center gap-2 text-white disabled:opacity-50"
+              >
+                <Mic size={18} strokeWidth={3} />
+                <span className="text-sm font-bold">Record</span>
+              </button>
+            ) : (
+              <button 
+                onClick={stopRec}
+                className="flex-1 wood-card-blue wood-press py-3 rounded-xl flex items-center justify-center gap-2 text-white"
+              >
+                <Square size={18} strokeWidth={3} fill="#fff" />
+                <span className="text-sm font-bold">Stop</span>
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>

@@ -1,0 +1,45 @@
+services:
+  # 1. The FastAPI Backend
+  - type: web
+    name: elise-learns-backend
+    runtime: python
+    plan: free
+    rootDir: backend
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: |
+      if [ ! -f en_US-amy-low.onnx ]; then
+        echo "Downloading Piper model..."
+        curl -L -o en_US-amy-low.onnx https://github.com/rhasspy/piper/releases/download/v0.0.2/en_US-amy-low.onnx
+        curl -L -o en_US-amy-low.onnx.json https://github.com/rhasspy/piper/releases/download/v0.0.2/en_US-amy-low.onnx.json
+      fi
+      gunicorn server:app --workers 1 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.4
+      - key: MONGO_URL
+        sync: false # Set sk-... in Render Dashboard
+      - key: DB_NAME
+        value: elise
+      - key: OPENAI_API_KEY
+        sync: false # Optional, for future use
+      - key: CORS_ORIGINS
+        value: "*" # You can restrict this to your Vercel URL later
+    healthCheckPath: /api/health
+
+  # 2. The React Frontend (Optional, Vercel is recommended instead)
+  - type: web
+    name: elise-learns-frontend
+    runtime: static
+    plan: free
+    rootDir: frontend
+    buildCommand: "npm install --legacy-peer-deps && npm run build"
+    publishDir: build
+    envVars:
+      - key: REACT_APP_BACKEND_URL
+        fromService:
+          name: elise-learns-backend
+          type: web
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
