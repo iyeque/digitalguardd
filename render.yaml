@@ -16,14 +16,10 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: 3.13.4
-      - key: MONGO_URL
-        sync: false # Set sk-... in Render Dashboard
       - key: DB_NAME
         value: elise
-      - key: OPENAI_API_KEY
-        sync: false # Optional, for future use
       - key: CORS_ORIGINS
-        value: "*" # You can restrict this to your Vercel URL later
+        value: "*"
     healthCheckPath: /api/health
 
   # 2. The React Frontend (Optional, Vercel is recommended instead)
