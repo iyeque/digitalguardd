@@ -21,21 +21,3 @@ services:
       - key: CORS_ORIGINS
         value: "*"
     healthCheckPath: /api/health
-
-  # 2. The React Frontend (Optional, Vercel is recommended instead)
-  - type: web
-    name: elise-learns-frontend
-    runtime: static
-    plan: free
-    rootDir: frontend
-    buildCommand: "npm install && npm run build"
-    publishDir: build
-    envVars:
-      - key: REACT_APP_BACKEND_URL
-        fromService:
-          name: elise-learns-backend
-          type: web
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
