@@ -22,7 +22,7 @@ export const MILESTONES = [
   { id: "gm_tricycle", category: "grossMotor", label: "Pedals a tricycle", ageMin: 30, ageMax: 42 },
   { id: "gm_balance", category: "grossMotor", label: "Balances on one foot briefly", ageMin: 36, ageMax: 48 },
   { id: "gm_hops", category: "grossMotor", label: "Hops on one foot", ageMin: 48, ageMax: 60 },
-  { id: "gm_climbs", category: "grossMotor", label: "Clbs onto/off furniture unassisted", ageMin: 24, ageMax: 30 },
+  { id: "gm_climbs", category: "grossMotor", label: "Climbs onto/off furniture unassisted", ageMin: 24, ageMax: 30 },
 
   // Fine Motor (12-60 months)
   { id: "fm_holds_cup", category: "fineMotor", label: "Drinks from cup independently", ageMin: 12, ageMax: 18 },
