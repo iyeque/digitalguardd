@@ -94,6 +94,14 @@ export default function ParentDashboard() {
               <Settings size={18} strokeWidth={3} color="#5A524D" />
               <span className="font-display font-bold text-base text-[#5A524D]">Settings</span>
             </Link>
+            <Link
+              to="/growth"
+              data-testid="open-growth-btn"
+              className="wood-card wood-press rounded-2xl px-5 py-3 inline-flex items-center gap-2"
+            >
+              <CalendarDays size={18} strokeWidth={3} color="#5A524D" />
+              <span className="font-display font-bold text-base text-[#5A524D]">Growth</span>
+            </Link>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-7">

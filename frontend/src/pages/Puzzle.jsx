@@ -39,24 +39,37 @@ const pickRound = (defs) => {
 
 export default function Puzzle() {
   const [variant, setVariant] = useState("shapes"); // 'shapes' | 'numbers'
+  const [mode, setMode] = useState("puzzle"); // puzzle | quiz
   const defs = variant === "shapes" ? SHAPE_DEFS : NUMBER_DEFS;
   const [round, setRound] = useState(() => pickRound(defs));
   const [placed, setPlaced] = useState({});
   const [dragging, setDragging] = useState(null);
   const [pulse, setPulse] = useState(null);
   const [done, setDone] = useState(false);
+  const [quizPicked, setQuizPicked] = useState(null);
   const slotRefs = useRef({});
 
-  useEffect(() => { trackOpen("puzzle"); speak("Drag each piece into its matching slot."); }, []);
+  useEffect(() => { trackOpen("puzzle"); speak("Tap, drag, play!"); }, []);
 
   // When variant changes, reset
   useEffect(() => {
+    setMode("puzzle");
     setRound(pickRound(defs));
     setPlaced({});
     setDone(false);
+    setQuizPicked(null);
     speak(variant === "numbers" ? "Match the numbers." : "Match the shapes.");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [variant]);
+
+  useEffect(() => {
+    if (mode === "quiz") {
+      const target = round.slotsOrder[quizPicked ?? 0];
+      const targetDef = defs[target];
+      speak(`Where is the ${targetDef.name}?`);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode, quizPicked]);
 
   const remainingPieces = useMemo(() =>
     round.piecesOrder.filter(p => !Object.values(placed).includes(p)),
@@ -173,8 +186,77 @@ export default function Puzzle() {
         </div>
 
         <p className="text-center text-base sm:text-lg text-[#8A817C] font-semibold mb-7">
-          Drag each piece into its matching outline.
+          {mode === "quiz" ? "Tap the shape I say." : "Drag each piece into its matching outline."}
         </p>
+
+        {mode === "quiz" && (
+          <div className="max-w-md mx-auto mb-6" data-testid="puzzle-quiz">
+            <div className="text-center text-base sm:text-lg text-[#8A817C] font-semibold mb-4">
+              Where is the <span className="font-bold text-[#5A524D]">{defs[round.slotsOrder[quizPicked ?? 0]].name}</span>?
+            </div>
+            <div className="flex justify-center gap-4 flex-wrap">
+              {round.piecesOrder.map((pieceIdx, i) => {
+                const def = defs[pieceIdx];
+                const targetPiece = round.slotsOrder[quizPicked ?? 0];
+                const isTarget = pieceIdx === targetPiece;
+                if (quizPicked !== null && quizPicked + 1 < round.slotsOrder.length && isTarget) {
+                  return (
+                    <button
+                      key={pieceIdx}
+                      onClick={() => {
+                        setQuizPicked((q) => (q ?? 0) + 1);
+                        speak(`Yes! ${def.name}.`);
+                        trackTap("puzzle");
+                      }}
+                      data-testid={`quiz-option-${i}`}
+                      className="wood-press rounded-3xl flex items-center justify-center"
+                      style={{ width: 140, height: 140, background: def.color, border: `2px solid ${def.color}`, boxShadow: `0 8px 0 0 ${def.color}AA` }}
+                    >
+                      {renderPiece(def)}
+                    </button>
+                  );
+                }
+                if (isTarget) {
+                  return (
+                    <button
+                      key={pieceIdx}
+                      onClick={() => {
+                        const next = (quizPicked ?? 0) + 1;
+                        if (next >= round.slotsOrder.length) {
+                          setDone(true);
+                          setMode("puzzle");
+                          setTimeout(() => speak("All done! Wonderful job!"), 300);
+                        } else {
+                          setQuizPicked(next);
+                          speak("Yes! Next.", { rate: 0.9 });
+                        }
+                        trackTap("puzzle");
+                      }}
+                      data-testid={`quiz-option-${i}`}
+                      className="wood-press rounded-3xl flex items-center justify-center"
+                      style={{ width: 140, height: 140, background: def.color, border: `2px solid ${def.color}`, boxShadow: `0 8px 0 0 ${def.color}AA` }}
+                    >
+                      {renderPiece(def)}
+                    </button>
+                  );
+                }
+                return (
+                  <button
+                    key={pieceIdx}
+                    onClick={() => {
+                      trackTap("puzzle");
+                      speak(`Try the ${defs[round.slotsOrder[quizPicked ?? 0]].name}.`);
+                    }}
+                    className="wood-card wood-press rounded-3xl flex items-center justify-center opacity-60"
+                    style={{ width: 140, height: 140, background: '#E6E0D6', border: '2px solid #C8C0B5' }}
+                  >
+                    {renderPiece(def, { size: 60 })}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         <div className="grid grid-cols-3 gap-5 sm:gap-8 mb-12" data-testid="puzzle-slots">
           {round.slotsOrder.map((idx, slotIdx) => {

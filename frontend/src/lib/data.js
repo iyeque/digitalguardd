@@ -123,5 +123,4 @@ export const ACTIVITIES = [
   { id: "rhymes",   title: "Rhymes",  subtitle: "Sing along",         path: "/rhymes",  colorClass: "wood-card-sage",    icon: "Music" },
   { id: "stories",  title: "Stories", subtitle: "Read me a story",    path: "/stories", colorClass: "wood-card-blue",    icon: "BookOpen" },
   { id: "sketch",   title: "Sketch",  subtitle: "Draw anything",      path: "/sketch",  colorClass: "wood-card-coral",   icon: "PenLine" },
-  { id: "milestones", title: "Growth", subtitle: "Track milestones", path: "/growth",  colorClass: "wood-card-sage",    icon: "Sparkles" },
 ];

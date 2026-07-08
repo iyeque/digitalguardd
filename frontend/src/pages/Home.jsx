@@ -1,27 +1,35 @@
 import { Link } from "react-router-dom";
 import { ACTIVITIES, AVATARS } from "@/lib/data";
 import { Layout } from "@/components/elise/Layout";
-import { Type, Hash, Palette, Shapes, Rabbit, Music, Sparkles, Puzzle, PenLine, BookOpen } from "lucide-react";
+import { Type, Hash, Palette, Shapes, Rabbit, Music, Puzzle, PenLine, BookOpen, Star } from "lucide-react";
 import { speak } from "@/lib/speech";
 import { getSettings } from "@/lib/voice-settings";
+import { getMilestones } from "@/lib/milestones";
+import { MILESTONES, MILESTONE_CATEGORIES } from "@/lib/milestones-data";
 
-const ICONS = { Type, Hash, Palette, Shapes, Rabbit, Music, Sparkles, Puzzle, PenLine, BookOpen };
+const ICONS = { Type, Hash, Palette, Shapes, Rabbit, Music, Puzzle, PenLine, BookOpen };
 
 export default function Home() {
   const settings = getSettings();
   const avatar = AVATARS.find(a => a.id === settings.avatar) || AVATARS[0];
+  const ms = getMilestones();
+  const mastered = MILESTONES.filter(m => ms[m.id]?.status === "mastered" && ms[m.id]?.date)
+    .sort((a, b) => (ms[b.id].date || "").localeCompare(ms[a.id].date || ""))
+    .slice(0, 4);
+  const catEmoji = {};
+  for (const c of MILESTONE_CATEGORIES) catEmoji[c.id] = c.emoji;
 
   return (
     <Layout showBack={false}>
       <section className="max-w-6xl mx-auto">
         <div className="text-center mb-10 sm:mb-14 animate-rise">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border-2 border-[#EAE3D9] mb-5">
-            <Sparkles size={18} strokeWidth={3} color="#9CBFA7" />
+            <Star size={18} strokeWidth={3} color="#F2CA7E" />
             <span className="text-sm sm:text-base font-bold text-[#8A817C] tracking-wide">
               {(settings.childName || "ELISE").toUpperCase()} LEARNS · for tiny hands
             </span>
           </div>
-          
+
           <div className="mb-4 text-7xl animate-float inline-block">
             {avatar.emoji}
           </div>
@@ -37,6 +45,29 @@ export default function Home() {
             Tap a wooden block to start a tiny adventure.
           </p>
         </div>
+
+        {mastered.length > 0 && (
+          <div className="mb-8">
+            <div className="text-xs font-bold text-[#8A817C] uppercase tracking-widest mb-2 text-center">
+              Latest skills
+            </div>
+            <div className="flex gap-2 justify-center flex-wrap">
+              {mastered.map((m) => (
+                <div
+                  key={m.id}
+                  className="rounded-full px-4 py-1.5 border-2 border-[#EAE3D9] bg-white"
+                  style={{ boxShadow: "0 3px 0 0 #EAE3D9" }}
+                >
+                  <span className="text-sm">{catEmoji[m.category] || ""}</span>
+                  <span className="ml-1 text-sm font-bold text-[#5A524D]">{m.label}</span>
+                  <span className="ml-2 text-[10px] font-bold text-[#8A817C]">
+                    {new Date(ms[m.id].date).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"

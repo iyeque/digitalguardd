@@ -152,11 +152,15 @@ export default function Rhymes() {
           </div>
           <div className="space-y-3">
             {rhyme.lines.map((line, i) => (
-              <div key={i}
-                className={`text-lg sm:text-2xl font-semibold transition-all duration-300 ${i === lineIdx ? 'text-[#E89D8A] scale-105' : 'text-[#5A524D]'}`}
-                style={{ transformOrigin: 'left' }}
+              <div
+                key={i}
+                className={`rounded-2xl px-4 py-3 transition-all duration-200 ${i === lineIdx ? 'bg-[#E89D8A]/12 scale-[1.02]' : ''}`}
+                style={{ boxShadow: i === lineIdx ? '0 6px 0 0 #E89D8A55' : 'none' }}
+                data-testid={`rhyme-line-${i}`}
               >
-                {line}
+                <div className="text-lg sm:text-2xl font-semibold transition-all duration-300" style={{ color: i === lineIdx ? '#E89D8A' : '#5A524D' }}>
+                  {line}
+                </div>
               </div>
             ))}
           </div>
