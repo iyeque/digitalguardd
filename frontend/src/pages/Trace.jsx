@@ -53,7 +53,7 @@ export default function Trace() {
     } else {
       speak("Draw anything!");
     }
-  }, [idx, mode]);
+  }, [idx, mode, letter.letter, palette.bg]);
 
   const drawGuide = (ctx, w, h, ch, color) => {
     ctx.clearRect(0, 0, w, h);

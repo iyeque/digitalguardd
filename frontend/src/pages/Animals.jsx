@@ -66,7 +66,7 @@ export default function Animals() {
 
   const shuffled = useMemo(() => {
     return [...ANIMALS].sort(() => Math.random() - 0.5);
-  }, [mode]); // re-shuffle when mode changes
+  }, [mode]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <Layout title="Animals">
