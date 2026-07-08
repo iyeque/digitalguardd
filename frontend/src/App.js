@@ -14,6 +14,7 @@ import Sketch from "@/pages/Sketch";
 import Milestones from "@/pages/Milestones";
 import ParentDashboard from "@/pages/ParentDashboard";
 import ParentSettings from "@/pages/ParentSettings";
+import { ErrorBoundary } from "@/components/elise/ErrorBoundary";
 import { startSessionTimer } from "@/lib/session-time";
 import { useEffect } from "react";
 
@@ -36,7 +37,7 @@ function App() {
           <Route path="/sketch" element={<Sketch />} />
           <Route path="/growth" element={<Milestones />} />
           <Route path="/parent" element={<ParentDashboard />} />
-          <Route path="/parent/settings" element={<ParentSettings />} />
+          <Route path="/parent/settings" element={<ErrorBoundary><ParentSettings /></ErrorBoundary>} />
         </Routes>
       </BrowserRouter>
     </div>
