@@ -75,11 +75,26 @@ export const cloudSpeak = async (text, opts = {}) => {
     currentAudio = audio;
     audio.play().catch(reject);
   });
+let backendAvailable = null;
+let warmInit = false;
+
+const lazyWarm = () => {
+  if (warmInit) return;
+  warmInit = true;
+  warmCloud().catch(() => {});
 };
 
 export const warmCloud = async () => {
   try {
     const r = await fetch(`${API}/health`);
-    if (r.ok) { const j = await r.json(); setBackendAvailable(!!j.tts); }
-  } catch (_) { setBackendAvailable(false); }
+    if (r.ok) {
+      const j = await r.json();
+      setBackendAvailable(!!j.tts);
+    }
+  } catch (_) {
+    setBackendAvailable(false);
+  }
+  return backendAvailable;
 };
+
+export const ensureBackendWarmed = () => lazyWarm();

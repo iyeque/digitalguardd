@@ -4,6 +4,7 @@ import { speak, stopSpeech } from "@/lib/speech";
 import { trackOpen, trackTap } from "@/lib/tracking";
 import { tryPlayStoryClip, saveStoryClip, getStoryClipBlob } from "@/lib/voice-clips";
 import { Play, Square as Stop, BookOpen, ChevronLeft, ChevronRight, Mic, Check, Trash2 } from "lucide-react";
+import { getSettings } from "@/lib/voice-settings";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || `${window.location.protocol}//${window.location.hostname}:8001`;
 const API = `${BACKEND_URL}/api`;
@@ -93,7 +94,13 @@ export default function Stories() {
       chunks.current = [];
       mediaRecorder.current.ondataavailable = (e) => chunks.current.push(e.data);
       mediaRecorder.current.onstop = async () => {
-        const blob = new Blob(chunks.current, { type: 'audio/ogg; codecs=opus' });
+        const mimeType =
+          MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+            ? 'audio/webm;codecs=opus'
+            : MediaRecorder.isTypeSupported('audio/mp4')
+              ? 'audio/mp4'
+              : '';
+        const blob = new Blob(chunks.current, mimeType ? { type: mimeType } : undefined);
         await saveStoryClip(profileId, story.id, idx, blob);
         setHasClips(prev => ({ ...prev, [idx]: true }));
         setRecordingLine(-1);

@@ -33,7 +33,13 @@ export default function VoiceLibrary({ childName, activeProfile }) {
       chunksRef.current = [];
       mr.ondataavailable = (e) => { if (e.data.size > 0) chunksRef.current.push(e.data); };
       mr.onstop = async () => {
-        const blob = new Blob(chunksRef.current, { type: 'audio/ogg; codecs=opus' });
+        const mimeType =
+          MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+            ? 'audio/webm;codecs=opus'
+            : MediaRecorder.isTypeSupported('audio/mp4')
+              ? 'audio/mp4'
+              : '';
+        const blob = new Blob(chunksRef.current, mimeType ? { type: mimeType } : undefined);
         await saveClip(getScopedKey(phrase), blob, `${expand(phrase)} (${activeProfile})`);
         stream.getTracks().forEach(t => t.stop());
         setRecordingPhrase(null);

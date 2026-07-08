@@ -204,6 +204,7 @@ allowed_origins = [
     "https://localhost:3000",
     "http://127.0.0.1:3000",
     "https://127.0.0.1:3000",
+    "https://digitalguardd.vercel.app",
 ]
 # Add current local network IP if possible, or allow all for local dev
 if os.environ.get('CORS_ORIGINS'):

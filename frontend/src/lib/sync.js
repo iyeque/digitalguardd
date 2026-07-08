@@ -2,7 +2,7 @@
 import { getSettings, updateSettings } from "./voice-settings";
 import { saveClip, listClips, getClipBlob } from "./voice-clips";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || `http://${window.location.hostname}:8001`;
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || `${window.location.protocol}//${window.location.hostname}:8001`;
 const API = `${BACKEND_URL}/api`;
 
 const getUserId = () => getSettings().syncId || null;
