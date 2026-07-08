@@ -75,6 +75,8 @@ export const cloudSpeak = async (text, opts = {}) => {
     currentAudio = audio;
     audio.play().catch(reject);
   });
+};
+
 let backendAvailable = null;
 let warmInit = false;
 
