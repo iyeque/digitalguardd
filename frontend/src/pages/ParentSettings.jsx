@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Layout } from "@/components/elise/Layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { getSettings, updateSettings, DEFAULTS } from "@/lib/voice-settings";
+import { getSettings, updateSettings, DEFAULTS, listVoices } from "@/lib/voice-settings";
 import { sayTest } from "@/lib/speech";
 import { AVATARS, AI_MODELS } from "@/lib/data";
 import { pushProgress, pushClips, pullAll } from "@/lib/sync";
