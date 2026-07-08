@@ -77,7 +77,6 @@ export const cloudSpeak = async (text, opts = {}) => {
   });
 };
 
-let backendAvailable = null;
 let warmInit = false;
 
 const lazyWarm = () => {
