@@ -5,7 +5,7 @@ import { Type, Hash, Palette, Shapes, Rabbit, Music, Sparkles, Puzzle, PenLine, 
 import { speak } from "@/lib/speech";
 import { getSettings } from "@/lib/voice-settings";
 
-const ICONS = { Type, Hash, Palette, Shapes, Rabbit, Music, Puzzle, PenLine, BookOpen };
+const ICONS = { Type, Hash, Palette, Shapes, Rabbit, Music, Sparkles, Puzzle, PenLine, BookOpen };
 
 export default function Home() {
   const settings = getSettings();

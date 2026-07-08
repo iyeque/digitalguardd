@@ -134,15 +134,35 @@ async def upload_clip(req: ClipSync, user_id: str = Header(...)):
     try:
         await coll_clips.update_one(
             {"user_id": user_id, "phrase": req.phrase},
-            {"$set": {
-                "audio_base64": req.audio_base64,
-                "label": req.label
-            }},
+            {"$set": {"audio_base64": req.audio_base64, "label": req.label}},
             upsert=True
         )
         return {"ok": True}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"DB upload failed: {e}")
+
+# ---------- Milestone Endpoints ----------
+@api_router.get("/milestones")
+async def get_milestones(user_id: str = Header(...)):
+    if coll_progress is None: raise HTTPException(status_code=503, detail="DB not available")
+    try:
+        doc = await coll_progress.find_one({"user_id": user_id})
+        return doc.get("milestones", {}) if doc else {}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"DB query failed: {e}")
+
+@api_router.post("/milestones")
+async def save_milestones(req: Dict, user_id: str = Header(...)):
+    if coll_progress is None: raise HTTPException(status_code=503, detail="DB not available")
+    try:
+        await coll_progress.update_one(
+            {"user_id": user_id},
+            {"$set": {"milestones": req}},
+            upsert=True
+        )
+        return {"ok": True}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"DB update failed: {e}")
 
 # ---------- Health ----------
 @api_router.get("/health")

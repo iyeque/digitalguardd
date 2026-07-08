@@ -5,7 +5,7 @@ import { phoneticsFor } from "@/lib/phonics";
 import { getSettings } from "@/lib/voice-settings";
 import { speak } from "@/lib/speech";
 import { trackOpen, trackTap } from "@/lib/tracking";
-import { ChevronLeft, ChevronRight, RefreshCw, Check } from "lucide-react";
+import { ChevronLeft, ChevronRight, RefreshCw, Check, PenLine } from "lucide-react";
 
 const PALETTES = [
   { bg: "#9CBFA7", border: "#82A88D" },
@@ -22,6 +22,7 @@ export default function Trace() {
   const lastRef = useRef({ x: 0, y: 0 });
   const [strokes, setStrokes] = useState(0);
   const [done, setDone] = useState(false);
+  const [mode, setMode] = useState("guided"); // guided | free
   const palette = PALETTES[idx % PALETTES.length];
   const letter = ALPHABET[idx];
 
@@ -38,20 +39,26 @@ export default function Trace() {
     ctx.scale(dpr, dpr);
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
-    drawGuide(ctx, rect.width, rect.height, letter.letter, palette.bg);
+    if (mode === "guided") {
+      drawGuide(ctx, rect.width, rect.height, letter.letter, palette.bg);
+    } else {
+      drawBlank(ctx, rect.width, rect.height, palette.bg);
+    }
     setStrokes(0);
     setDone(false);
     const settings = getSettings();
     const sound = settings.phonicsMode ? phoneticsFor(letter.letter) : letter.letter;
-    speak(`Trace the ${sound}.`);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [idx]);
+    if (mode === "guided") {
+      speak(`Trace the ${sound}.`);
+    } else {
+      speak("Draw anything!");
+    }
+  }, [idx, mode]);
 
   const drawGuide = (ctx, w, h, ch, color) => {
     ctx.clearRect(0, 0, w, h);
     ctx.fillStyle = '#FFFCF6';
     ctx.fillRect(0, 0, w, h);
-    // Faint guide letter
     ctx.font = `bold ${Math.min(w, h) * 0.92}px Fredoka, system-ui`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
@@ -60,6 +67,12 @@ export default function Trace() {
     ctx.strokeStyle = color + '66';
     ctx.lineWidth = 3;
     ctx.strokeText(ch, w / 2, h / 2 + 4);
+  };
+
+  const drawBlank = (ctx, w, h, color) => {
+    ctx.clearRect(0, 0, w, h);
+    ctx.fillStyle = '#FFFCF6';
+    ctx.fillRect(0, 0, w, h);
   };
 
   const pos = (e) => {
@@ -100,6 +113,12 @@ export default function Trace() {
         const sound = settings.phonicsMode ? phoneticsFor(letter.letter) : letter.letter;
         speak(`Lovely tracing! ${sound} for ${letter.word}.`);
       }
+      if (mode === "guided" && next >= 3) {
+        setTimeout(() => {
+          speak("Great try! Let's do the next one.");
+          setIdx((i) => (i + 1) % ALPHABET.length);
+        }, 1200);
+      }
       return next;
     });
   };
@@ -108,7 +127,11 @@ export default function Trace() {
     const c = canvasRef.current;
     const ctx = c.getContext('2d');
     const rect = c.getBoundingClientRect();
-    drawGuide(ctx, rect.width, rect.height, letter.letter, palette.bg);
+    if (mode === "guided") {
+      drawGuide(ctx, rect.width, rect.height, letter.letter, palette.bg);
+    } else {
+      drawBlank(ctx, rect.width, rect.height, palette.bg);
+    }
     setStrokes(0);
     setDone(false);
   };
@@ -156,17 +179,23 @@ export default function Trace() {
 
         <div className="mt-6 flex items-center justify-center gap-3 sm:gap-4 flex-wrap">
           <button
-            onClick={prev}
-            data-testid="trace-prev"
-            className="wood-card wood-press p-4 rounded-2xl"
-            aria-label="Previous letter"
+            onClick={() => setMode("guided")}
+            data-testid="trace-mode-guided"
+            className={`wood-press rounded-full px-4 py-2 font-bold text-sm ${mode === "guided" ? "wood-card-sage text-white" : "wood-card text-[#5A524D]"}`}
           >
-            <ChevronLeft size={28} strokeWidth={3} color="#5A524D" />
+            Letters
+          </button>
+          <button
+            onClick={() => { setMode("free"); speak("Draw anything!"); }}
+            data-testid="trace-mode-free"
+            className={`wood-press rounded-full px-4 py-2 font-bold text-sm ${mode === "free" ? "wood-card-coral text-white" : "wood-card text-[#5A524D]"}`}
+          >
+            Free draw
           </button>
           <button
             onClick={clear}
             data-testid="trace-clear"
-            className="wood-card wood-press rounded-full px-5 py-3 inline-flex items-center gap-2"
+            className="wood-press wood-card rounded-full px-5 py-3 inline-flex items-center gap-2 text-[#5A524D]"
           >
             <RefreshCw size={20} strokeWidth={3} color="#5A524D" />
             <span className="font-display font-bold text-base text-[#5A524D]">Clear</span>

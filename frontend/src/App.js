@@ -10,6 +10,8 @@ import Rhymes from "@/pages/Rhymes";
 import Puzzle from "@/pages/Puzzle";
 import Trace from "@/pages/Trace";
 import Stories from "@/pages/Stories";
+import Sketch from "@/pages/Sketch";
+import Milestones from "@/pages/Milestones";
 import ParentDashboard from "@/pages/ParentDashboard";
 import ParentSettings from "@/pages/ParentSettings";
 import { startSessionTimer } from "@/lib/session-time";
@@ -31,6 +33,8 @@ function App() {
           <Route path="/rhymes" element={<Rhymes />} />
           <Route path="/puzzle" element={<Puzzle />} />
           <Route path="/stories" element={<Stories />} />
+          <Route path="/sketch" element={<Sketch />} />
+          <Route path="/growth" element={<Milestones />} />
           <Route path="/parent" element={<ParentDashboard />} />
           <Route path="/parent/settings" element={<ParentSettings />} />
         </Routes>
