@@ -1,7 +1,7 @@
 // Hybrid TTS client: cloud (OpenAI via /api/tts OR ElevenLabs direct) with browser-TTS fallback.
 // Generation-tracked to prevent overlapping/echo when many calls fire fast.
 import { getSettings } from "@/lib/voice-settings";
-import { cloudSpeakEleven, stopElevenAudio } from "@/lib/tts-elevenlabs";
+import { elevenSpeak, stopElevenAudio } from "@/lib/tts-elevenlabs";
 import { tryPlayCustom, stopCustom } from "@/lib/voice-clips";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || `${window.location.protocol}//${window.location.hostname}:8001`;

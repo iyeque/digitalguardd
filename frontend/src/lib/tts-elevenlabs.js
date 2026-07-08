@@ -30,6 +30,7 @@ export const stopElevenAudio = () => {
 
 export const elevenSpeak = async (text, opts = {}) => {
   const settings = getSettings();
+  console.log('[EL] speak request', settings.elevenlabsVoiceId, text.slice(0, 40));
   if (!settings.elevenlabsApiKey) throw new Error('missing-elevenlabs-key');
   if (!settings.elevenlabsVoiceId) throw new Error('missing-elevenlabs-voice');
 
@@ -55,6 +56,7 @@ export const elevenSpeak = async (text, opts = {}) => {
 
   if (!r.ok) {
     const t = await r.text();
+    console.error('[EL] failed', settings.elevenlabsVoiceId, r.status, t);
     throw new Error(`ElevenLabs ${r.status}: ${t}`);
   }
 
