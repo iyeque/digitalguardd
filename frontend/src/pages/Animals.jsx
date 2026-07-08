@@ -3,6 +3,7 @@ import { Layout } from "@/components/elise/Layout";
 import { ANIMALS } from "@/lib/data";
 import { speak } from "@/lib/speech";
 import { trackOpen, trackTap } from "@/lib/tracking";
+import { playAnimalSound, stopAnimalSound } from "@/lib/animal-audio";
 
 export default function Animals() {
   const [active, setActive] = useState(null);
@@ -29,10 +30,11 @@ export default function Animals() {
   const onTap = (a) => {
     setActive(a.name);
     trackTap("animals");
+    const audioPlayed = playAnimalSound(a.name);
 
     if (mode === "explore") {
       speak(`${a.name} says ${a.sound}!`);
-      setTimeout(() => setActive(null), 1200);
+      setTimeout(() => { setActive(null); stopAnimalSound(); }, audioPlayed ? 1800 : 1200);
       return;
     }
 
@@ -44,10 +46,12 @@ export default function Animals() {
           setFeedback(null);
           setQuizTarget(null);
           startQuiz();
+          stopAnimalSound();
         }, 2000);
       } else {
         setFeedback("wrong");
         speak(`Not this one. What does the ${quizTarget.name} say?`);
+        setTimeout(() => stopAnimalSound(), 800);
       }
     }
   };

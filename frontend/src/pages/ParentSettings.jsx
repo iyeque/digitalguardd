@@ -2,12 +2,13 @@ import { useEffect, useState } from "react";
 import { Layout } from "@/components/elise/Layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { getSettings, updateSettings, listVoices, DEFAULTS } from "@/lib/voice-settings";
+import { getSettings, updateSettings, DEFAULTS } from "@/lib/voice-settings";
 import { sayTest } from "@/lib/speech";
 import { AVATARS, AI_MODELS } from "@/lib/data";
 import { pushProgress, pushClips, pullAll } from "@/lib/sync";
 import { Volume2, User, UserRound, Maximize2, Cloud, Monitor, CloudUpload, CloudDownload, Cpu, DownloadCloud, Sparkles, Heart } from "lucide-react";
 import VoiceLibrary from "@/components/elise/VoiceLibrary";
+import { ELEVENLABS_VOICES } from "@/lib/tts-elevenlabs";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || `${window.location.protocol}//${window.location.hostname}:8001`;
 const API = `${BACKEND_URL}/api`;
@@ -169,29 +170,40 @@ export default function ParentSettings() {
 
         {/* TTS engine */}
         <Panel title="Voice engine" subtitle={cloudAvailable ? "Cloud voices sound much more natural." : "Cloud voices unavailable — using device voices."}>
-          <div className="grid grid-cols-2 gap-3" data-testid="tts-engine-toggle">
+          <div className="grid grid-cols-3 gap-3" data-testid="tts-engine-toggle">
             <ToggleCard
-              active={settings.useCloudTts && cloudAvailable}
-              onClick={() => apply({ useCloudTts: true })}
-              testId="tts-engine-cloud"
-              icon={<Cloud size={32} strokeWidth={3} color={settings.useCloudTts && cloudAvailable ? '#fff' : '#9CBFA7'} />}
-              label="Cloud (best)"
+              active={settings.useCloudTts && settings.cloudProvider === 'openai'}
+              onClick={() => apply({ useCloudTts: true, cloudProvider: 'openai' })}
+              testId="tts-engine-openai"
+              icon={<Cloud size={28} strokeWidth={3} color={settings.useCloudTts && settings.cloudProvider === 'openai' ? '#fff' : '#9CBFA7'} />}
+              label="OpenAI"
               activeClass="wood-card-sage"
               disabled={!cloudAvailable}
+            />
+            <ToggleCard
+              active={settings.useCloudTts && settings.cloudProvider === 'elevenlabs'}
+              onClick={() => apply({ useCloudTts: true, cloudProvider: 'elevenlabs' })}
+              testId="tts-engine-elevenlabs"
+              icon={<Sparkles size={28} strokeWidth={3} color={settings.useCloudTts && settings.cloudProvider === 'elevenlabs' ? '#fff' : '#C4B0DD'} />}
+              label="ElevenLabs"
+              activeClass="wood-card-coral"
             />
             <ToggleCard
               active={!settings.useCloudTts}
               onClick={() => apply({ useCloudTts: false })}
               testId="tts-engine-browser"
-              icon={<Monitor size={32} strokeWidth={3} color={!settings.useCloudTts ? '#fff' : '#A1BCE3'} />}
+              icon={<Monitor size={28} strokeWidth={3} color={!settings.useCloudTts ? '#fff' : '#A1BCE3'} />}
               label="Device"
               activeClass="wood-card-blue"
             />
           </div>
+          {settings.useCloudTts && settings.cloudProvider === 'elevenlabs' && !settings.elevenlabsApiKey && (
+            <div className="mt-3 text-sm font-bold text-[#E89D8A]">Set REACT_APP_ELEVENLABS_API_KEY in Vercel to enable ElevenLabs voices.</div>
+          )}
         </Panel>
 
         {/* Cloud voice picker */}
-        {settings.useCloudTts && cloudAvailable && (
+        {settings.useCloudTts && cloudAvailable && settings.cloudProvider !== 'elevenlabs' && (
           <Panel title="Cloud voice" subtitle="Pick the personality that reads aloud.">
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3" data-testid="cloud-voice-grid">
               {cloudVoices.map(v => (
@@ -203,6 +215,25 @@ export default function ParentSettings() {
                 >
                   <div className="font-display font-bold text-lg capitalize">{v.id}</div>
                   <div className="text-xs font-bold opacity-90">{v.label.replace(/^[A-Z][a-z]+\s/, '')}</div>
+                  <div className="text-[10px] uppercase tracking-widest mt-1 opacity-80">{v.gender}</div>
+                </button>
+              ))}
+            </div>
+          </Panel>
+        )}
+
+        {/* ElevenLabs voice picker */}
+        {settings.useCloudTts && settings.cloudProvider === 'elevenlabs' && settings.elevenlabsApiKey && (
+          <Panel title="ElevenLabs voice" subtitle="Male or female — pick the narrator.">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3" data-testid="elevenlabs-voice-grid">
+              {ELEVENLABS_VOICES.map(v => (
+                <button
+                  key={v.id}
+                  onClick={() => apply({ elevenlabsVoiceId: v.id })}
+                  data-testid={`el-voice-${v.id}`}
+                  className={`wood-press rounded-2xl py-4 px-3 text-left transition ${settings.elevenlabsVoiceId === v.id ? (v.gender === 'male' ? 'wood-card-blue' : 'wood-card-coral') + ' text-white' : 'wood-card text-[#5A524D]'}`}
+                >
+                  <div className="font-display font-bold text-lg">{v.label}</div>
                   <div className="text-[10px] uppercase tracking-widest mt-1 opacity-80">{v.gender}</div>
                 </button>
               ))}

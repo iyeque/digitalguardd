@@ -1,6 +1,8 @@
-// Hybrid TTS client: cloud (OpenAI via /api/tts) with browser-TTS fallback.
+// Hybrid TTS client: cloud (OpenAI via /api/tts OR ElevenLabs direct) with browser-TTS fallback.
 // Generation-tracked to prevent overlapping/echo when many calls fire fast.
 import { getSettings } from "@/lib/voice-settings";
+import { cloudSpeakEleven, stopElevenAudio } from "@/lib/tts-elevenlabs";
+import { tryPlayCustom, stopCustom } from "@/lib/voice-clips";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || `${window.location.protocol}//${window.location.hostname}:8001`;
 const API = `${BACKEND_URL}/api`;
@@ -20,6 +22,7 @@ export const stopCloudAudio = () => {
     try { currentAudio.pause(); currentAudio.src = ''; } catch (_) {}
     currentAudio = null;
   }
+  stopElevenAudio();
 };
 
 const fetchAudio = async (text, voice, speed) => {
@@ -45,11 +48,15 @@ const fetchAudio = async (text, voice, speed) => {
 export const cloudSpeak = async (text, opts = {}) => {
   const settings = getSettings();
   if (!settings.useCloudTts) throw new Error('cloud-tts-disabled');
+  const provider = settings.cloudProvider || 'openai';
 
-  // Bump generation; keep our token
+  if (provider === 'elevenlabs') {
+    return elevenSpeak(text, opts);
+  }
+
+  // default: OpenAI via backend
   stopCloudAudio();
   const myGen = ++generation;
-
   let url;
   try {
     url = await fetchAudio(text, settings.cloudVoice || 'nova', settings.rate || 1.0);
@@ -58,10 +65,7 @@ export const cloudSpeak = async (text, opts = {}) => {
     setBackendAvailable(false);
     throw err;
   }
-
-  // If a newer speak() came in while we were fetching, abandon
   if (myGen !== generation) return;
-
   return await new Promise((resolve, reject) => {
     const audio = new Audio(url);
     audio.volume = settings.volume ?? 1;

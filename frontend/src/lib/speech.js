@@ -1,5 +1,6 @@
 import { getSettings, inferGender } from "@/lib/voice-settings";
 import { cloudSpeak, stopCloudAudio, warmCloud } from "@/lib/tts-client";
+import { elevenSpeak, stopElevenAudio } from "@/lib/tts-elevenlabs";
 import { tryPlayCustom, stopCustom } from "@/lib/voice-clips";
 
 let voicesCache = null;
@@ -58,7 +59,6 @@ let cachedVoice = null;
 let cachedVoiceVersion = -1;
 
 const getCachedVoice = (settings) => {
-  // invalidate if voices changed or settings changed
   const sv = settings.voiceURI || settings.gender || settings.lang || "";
   if (cachedVoiceVersion !== voicesVersion || cachedVoiceVersion !== settings.__v) {
     cachedVoice = pickVoice(settings);
@@ -67,8 +67,6 @@ const getCachedVoice = (settings) => {
   return cachedVoice;
 };
 
-// Warm the browser synthesis engine once.
-// Some browsers (Chrome) have extra latency on the first speak().
 let warmedUp = false;
 const warmBrowserTts = () => {
   if (warmedUp || !("speechSynthesis" in window)) return;
@@ -84,7 +82,6 @@ const browserSpeak = (text, opts = {}) => {
   if (!("speechSynthesis" in window)) return;
   try {
     const settings = getSettings();
-    window.speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(text);
     const v = getCachedVoice(settings);
     if (v) u.voice = v;
@@ -99,21 +96,19 @@ const browserSpeak = (text, opts = {}) => {
 
 export const stopSpeech = () => {
   if ("speechSynthesis" in window) {
-    try {
-      window.speechSynthesis.cancel();
-    } catch (_) {}
+    try { window.speechSynthesis.cancel(); } catch (_) {}
   }
   stopCloudAudio();
+  stopElevenAudio();
   stopCustom();
 };
 
-let speakDebounce = null;
-const SPEAK_DEBOUNCE_MS = 60;
+// Simple queue: speak() returns a promise that resolves when this utterance finishes.
+// Concurrent calls are serialized so nothing cuts off mid-sentence.
+let queue = Promise.resolve();
+const SPEAK_DEBOUNCE_MS = 180;
 
 export const speak = async (text, opts = {}) => {
-  stopSpeech();
-  warmBrowserTts();
-
   // Custom voice clip wins if available for ACTIVE PROFILE
   try {
     const { activeProfile = "Mom" } = getSettings();
@@ -122,21 +117,32 @@ export const speak = async (text, opts = {}) => {
     if (played) return;
   } catch (_) {}
 
-  // Cloud TTS (Piper Backend)
-  if (getSettings().useCloudTts) {
-    cloudSpeak(text, opts).catch(() => browserSpeak(text, opts));
-    return;
-  }
-
-  // Debounce rapid taps so we don’t cancel storms
-  if (speakDebounce) clearTimeout(speakDebounce);
-  speakDebounce = setTimeout(() => browserSpeak(text, opts), SPEAK_DEBOUNCE_MS);
+  // Queue the utterance so rapid taps don't cancel each other
+  queue = queue.then(async () => {
+    await new Promise(r => setTimeout(r, SPEAK_DEBOUNCE_MS));
+    stopCustom();
+    // Only stop cloud/browser audio if this is a new generation (handled inside providers)
+    const settings = getSettings();
+    if (settings.useCloudTts && (settings.cloudProvider === 'openai')) {
+      try {
+        await cloudSpeak(text, opts);
+        return;
+      } catch (_) { /* fall through */ }
+    }
+    if (settings.useCloudTts && (settings.cloudProvider === 'elevenlabs')) {
+      try {
+        await elevenSpeak(text, opts);
+        return;
+      } catch (_) { /* fall through */ }
+    }
+    browserSpeak(text, opts);
+  });
+  return queue;
 };
 
 export const sayTest = () => {
   const s = getSettings();
   const txt = `Hi ${s.childName || "friend"}! I'm your reading buddy. Let's learn together.`;
-  // Attach a small settings version sticker so voice cache stays valid
   s.__v = (s.__v || 0) + 1;
   speak(txt);
 };

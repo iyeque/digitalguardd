@@ -9,24 +9,27 @@ export const DEFAULTS = {
   volume: 1,
   lang: 'en-US',
   bgMusicEnabled: false, // for rhymes page
-  // Cloud TTS (OpenAI)
-  useCloudTts: true,     // primary engine
-  cloudVoice: 'nova',    // alloy|ash|coral|echo|fable|nova|onyx|sage|shimmer
+  // Cloud TTS
+  useCloudTts: true,
+  cloudProvider: 'openai', // 'openai' | 'elevenlabs' | 'browser'
+  cloudVoice: 'nova',    // OpenAI: alloy|ash|coral|echo|fable|nova|onyx|sage|shimmer
+  elevenlabsVoiceId: '21m00Tcm4TlvDq8ikWAM',
+  elevenlabsApiKey: '',  // read from Vercel env at build/runtime
   // Personalisation
   childName: 'Elise',
   avatar: 'rabbit',
   // Phonics
-  phonicsMode: false,    // when true, ABC speaks letter sounds (buh) not names (bee)
+  phonicsMode: false,
   // Daily session timer (minutes); 0 = unlimited
   dailyLimitMins: 0,
   // Cloud Sync
-  syncId: null,          // Unique ID for cross-device sync
-  // Local AI (Piper/Sherpa)
-  localAiEnabled: false, 
+  syncId: null,
+  // Local AI
+  localAiEnabled: false,
   localAiModelLoaded: false,
-  downloadedModels: [],  // list of lang codes e.g. ['en-US', 'es-ES']
+  downloadedModels: [],
   // Caregiver Profiles
-  activeProfile: 'Mom',  // 'Mom' | 'Dad' | 'Grandma' | 'Grandpa'
+  activeProfile: 'Mom',
 };
 
 const read = () => {
